@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ng's Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+
+        .sections{
+            margin: 10px;
+            padding: 15px;
+            flex: 1;
+            border: 3px,solid;
+            gap: 15px;
+        }
+
+        body{
+            background-color: #09092a;
+            color: #284c6c;
+        }
+
+        .container-row{
+            display: flex;
+            gap: 15px;
+        }
+
+        .card{
+            background-color: #505081;
+            flex: 1;
+            height: 400px;
+            padding: 10px;
+            text-align: center;
+            border: 4px solid;
+            border-color: #8686ac;
+            border-radius: 25px;
+            transition: all, 0.3s;
+        }
+
+        .card.card:hover{
+            background-color: #50508182;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px, solid;
+            margin: 5px;
+        }
+
+        table th{
+            border: 1px, solid;
+            padding: 8px;
+            background-color: #484872;
+            font-size: 22px;
+            color: #0f0e47;
+        }
+
+        table td{
+            border: 1px, solid;
+            padding: 5px;
+            background-color: #545472;
+            font-size: 18px;
+            color: #0f0e47;
+        }
+
+        a{
+            cursor: pointer;
+
+        }
+
+        .container-row h2{
+            font-size: 40px;
+        }
+
+        .container{
+            
+            width: 500px;
+            height: 500px;
+            border: 3px, solid;
+        }
+
+        .logo{
+            width: 100px;
+            height: 100px;
+            border: 4px, solid, #505081;
+            border-radius: 30px;
+            padding: 5px;
+            transition: all 0.4s;
+        }
+
+        .logo:hover{
+            background-color: #59597d;
+        }
+
+        .imgHobby{
+            margin: 15px;
+            width: 300px;
+            height: 300px;
+            border: 2px, solid;
+            border-radius: 200px;
+        }
+
+        #connection i{
+            font-size: 30px;
+            color: rgba(21, 215, 254, 0.5);
+            text-align: left;
+
+        }
+
+        #connection button{
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin: 5px;
+            padding: 15px;
+            width: 500px;
+            height: 60px;
+            text-align: left;
+            font-size: 20px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: rgba(21, 215, 254, 0.5);
+
+            border-radius: 15px;
+            background-color: rgb(28, 31, 212,0.7);
+            transition:all, 0.4s;
+            
+        }
+
+        #connection button:hover{
+            background-color: rgb(28, 31, 212,0.6);
+        }
+        
+    </style>
+
+</head>
+<body>
+    <section class="sections">
+        <h1>Ng Jinhan</h1> <!---->
+        <h5></h5>Just a regular student</h5> <!--Description--> 
+        <img src="" alt="pfp">
+    </section>
+    
+    <section class="sections">
+        <h1>Education Background</h1>
+        <table id="EduTable">
+            <tr>
+                <th>Institution</th>
+                <th>Period</th>
+                <th>Qualifications</th>
+            </tr>
+            <tr>
+                <td style="text-align: center;">Asia Pacific University <br><a href="https://www.apu.edu.my/" target="_blank"><img class="logo" src="img/APUlogo.jpeg" alt="APU.logo"></a></td>
+                <td>2025 - Present</td>
+                <td>Diploma in Information & Communication Technology (Interactive Technology)</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">Tsun Jin High School<br><a href="https://www.tsunjin.edu.my/" target="_blank"><img class="logo" src="img/TJlogo.jpeg" alt="TJ.logo"></a></td>
+                <td>2018 - 2024</td>
+                <td>
+                    UEC (Unified Examination Certificate) <br>
+                    SPM (Sijil Pelajaran Malaysia)
+                </td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="sections">
+        <h1>Hobbies and Interests</h1>
+        <div class="container-row">
+            <div class="card">
+            <h2><i class='fas fa-gamepad'></i> Gaming</h2>
+            <img class="imgHobby" src="img/gaming.gif" alt="game">
+        </div>
+        <div class="card">
+            <h2><i class='fas fa-code'></i> Coding</h2>
+            <img class="imgHobby" src="img/coding.gif" alt="code">
+        </div>
+        <div class="card">
+            <h2><i class='fas fa-music'></i> Music</h2>
+            <img class="imgHobby" src="img/music.gif" alt="music">
+        </div>
+        </div>
+    </section>
+
+    <section class="sections">
+        <h1>Contact me</h1>
+        <div style="display: flex;">
+            <div class="container">
+                <div class="inputSec">
+                    <i class="fas fa-user"></i> Name
+                    <br>
+                    <input type="text" placeholder="Your Name">
+                </div>
+                <div class="inputSec">
+                    <i class="fas fa-envelope"></i> Email
+                    <br>
+                    <input type="email" placeholder="yourmail@example.com">
+                </div>
+                <div class="inputSec">
+                    <i class="fas fa-comment"></i> Message
+                    <br>
+                    <textarea name="" id=""></textarea>
+                </div>
+                <br>
+                <button><i class="	fas fa-location-arrow"></i> Send Message</button>
+            </div>
+        
+            <div id="connection">
+                
+                <a href="https://github.com/oggyng" target="_blank"><button><i class="fab fa-github"></i> Github</button></a> <br>
+                <a href="https://steamcommunity.com/profiles/76561199059538719/" target="_blank"><button><i class="fab fa-steam"></i> Steam</button></a> <br>
+                <a href="https://discord.com/users/663346192045834252" target="_blank"><button><i class="fab fa-discord"></i> Discord</button></a> <br>
+                <a href="https://www.linkedin.com/in/ng-jinhan-801620417/" target="_blank"><button><i class="fab fa-linkedin"></i> LinkedIn</button></a> <br>
+                <a href="https://www.instagram.com/orhgee/" target="_blank"><button><i class="fab fa-instagram"></i> Instagram</button></a>
+            </div>
+        </div>
+    </section>
+
+    
+    
+</body>
+</html>
