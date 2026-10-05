@@ -18,32 +18,51 @@
             flex: 1;
             border: 3px,solid;
             gap: 15px;
+            border-radius: 30px;
+            max-width: 1500px;
         }
 
         body{
             background-color: #09092a;
-            color: #284c6c;
+            color: #57ebe8;
+            justify-content: center;
         }
 
         .container-row{
             display: flex;
             gap: 15px;
+            justify-content: center;
         }
 
         .card{
             background-color: #505081;
             flex: 1;
-            height: 400px;
+            max-height: 400px;
+            max-width: 340px;
             padding: 10px;
             text-align: center;
             border: 4px solid;
             border-color: #8686ac;
             border-radius: 25px;
-            transition: all, 0.3s;
+            transition: all 1s ease-in-out;
+            display:flex;
+            overflow: hidden;
+            white-space: nowrap;
+            gap: 50px;
         }
 
-        .card.card:hover{
-            background-color: #50508182;
+        .desc{
+            padding: 20px;   
+        }
+
+        .desc h2{
+            padding: 25px;
+        }
+
+        .desc li{
+            font-size: 24px;
+            padding: 3px;
+            text-align: left;
         }
 
         table{
@@ -128,7 +147,7 @@
 
             border-radius: 15px;
             background-color: rgb(28, 31, 212,0.7);
-            transition:all, 0.4s;
+            transition:all, 0.5s;
             
         }
 
@@ -138,14 +157,17 @@
         
     </style>
 
+    
+
 </head>
 <body>
+<!----Profile------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
     <section class="sections">
         <h1>Ng Jinhan</h1> <!---->
         <h5></h5>Just a regular student</h5> <!--Description--> 
         <img src="" alt="pfp">
     </section>
-    
+<!----Education------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>  
     <section class="sections">
         <h1>Education Background</h1>
         <table id="EduTable">
@@ -169,25 +191,41 @@
             </tr>
         </table>
     </section>
-
+<!----Hobby Interest------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
     <section class="sections">
         <h1>Hobbies and Interests</h1>
-        <div class="container-row">
-            <div class="card">
-            <h2><i class='fas fa-gamepad'></i> Gaming</h2>
-            <img class="imgHobby" src="img/gaming.gif" alt="game">
-        </div>
-        <div class="card">
-            <h2><i class='fas fa-code'></i> Coding</h2>
-            <img class="imgHobby" src="img/coding.gif" alt="code">
-        </div>
-        <div class="card">
-            <h2><i class='fas fa-music'></i> Music</h2>
-            <img class="imgHobby" src="img/music.gif" alt="music">
-        </div>
+        <div class="container-row" id="hobint">
+            <div class="card" id="game">
+                <div class="main">
+                    <h2><i class='fas fa-gamepad'></i> Gaming</h2>
+                    <img class="imgHobby" src="img/gaming.gif" alt="game">
+                </div>
+                
+                <div class="desc" >
+                    <h2>What I play</h2>
+                    <ul>
+                        <li>Modded Minecraft</li>
+                        <li>Elden Ring: Nightreign</li>
+                        <li>Left 4 Dead 2</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" id="code">
+                <div class="main">
+                    <h2><i class='fas fa-code'></i> Coding</h2>
+                    <img class="imgHobby" src="img/coding.gif" alt="code">
+                </div>
+                
+            </div>
+            <div class="card" id="music">
+                <div class="main">
+                    <h2><i class='fas fa-music'></i> Music</h2>
+                <img class="imgHobby" src="img/music.gif" alt="music">
+                </div>
+            </div>
         </div>
     </section>
-
+<!----Contact Me----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <section class="sections">
         <h1>Contact me</h1>
         <div style="display: flex;">
@@ -221,8 +259,42 @@
             </div>
         </div>
     </section>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+    <script>
+        const game = document.getElementById("game");
+        const code = document.getElementById("code");
+        const music = document.getElementById("music");
+        const box = document.getElementById("hobint");
 
-    
+        function setActive(activeItem) {
+            [game, code, music].forEach(item => {
+                item.style.transition = "all 1s";
+                if (item === activeItem) {
+                    
+                    item.style.flex = 5;
+                    item.style.alignItems = "flex-start";
+                    item.style.paddingRight = "25%"; 
+                } else {
+                    item.style.flex = 1;
+                    item.style.paddingRight = "0px"; 
+                }
+            });
+        }
+
+        game.addEventListener("mouseover", () => setActive(game));
+        music.addEventListener("mouseover", () => setActive(music));
+        code.addEventListener("mouseover", () => setActive(code));
+
+        box.addEventListener("mouseleave", () => {
+            [game, code, music].forEach(item => {
+                item.style.transition = "all 1s";
+                item.style.paddingRight = "0px"; 
+                item.style.flex = 1;
+                // item.style.display = "center";
+            });
+        });
+
+    </script>
     
 </body>
 </html>
