@@ -9,19 +9,17 @@
         *{
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-
         .sections{
-            margin: 10px;
+            margin: 10px auto;
             padding: 15px;
-            flex: 1;
             border: 3px,solid;
-            gap: 15px;
             border-radius: 30px;
-            max-width: 1500px;
+            max-width: 1300px;
             background-color: rgba(255, 255, 255, 0.082);
-            width: 1500px;
+            width: 100%;
             min-width: none;
         }
 
@@ -42,30 +40,56 @@
 
         .card{
             background-color: #505081;
-            flex: 1;
-            max-height: 400px;
-            max-width: 340px;
+            transition: background-color 0.5s;
+            height: 400px;
             padding: 10px;
             text-align: center;
             border: 4px solid;
             border-color: #8686ac;
             border-radius: 25px;
-            transition: all 1s ease-in-out;
-            display:flex;
             overflow: hidden;
             white-space: nowrap;
             gap: 50px;
+            flex: 1;
+            position: relative;
         }
 
-        .desc{
+        .front, .back{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 1.8s;
+            backface-visibility: hidden;
+        }
+
+
+        .back{
+            transform: rotateY(180deg);
+        }
+
+        .card:hover{
+            background-color: rgba(255, 255, 255, 0.352);
+            
+        }
+
+        .card.flip .front{
+            transform: rotateY(560deg);
+        } 
+
+        .card.flip .back{
+            transform: rotateY(720deg);
+        }
+
+
+        .back{
             padding: 20px;   
         }
 
-        .desc h2{
+        .back h2{
             padding: 25px;
         }
 
-        .desc li{
+        .back li{
             font-size: 24px;
             padding: 3px;
             text-align: left;
@@ -223,7 +247,7 @@
 <!----Education------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>  
     <section class="sections">
         <h1>Education Background</h1>
-        <table id="EduTable">
+        <table>
             <tr>
                 <th>Institution</th>
                 <th>Period</th>
@@ -249,12 +273,12 @@
         <h1>Hobbies and Interests</h1>
         <div class="container-row" id="hobint">
             <div class="card" id="game">
-                <div class="main">
+                <div class="front">
                     <h2><i class='fas fa-gamepad'></i> Gaming</h2>
                     <img class="imgHobby" src="img/gaming.gif" alt="game">
                 </div>
                 
-                <div class="desc" >
+                <div class="back" >
                     <h2>What I play</h2>
                     <ul>
                         <li>Modded Minecraft</li>
@@ -264,14 +288,14 @@
                 </div>
             </div>
             <div class="card" id="code">
-                <div class="main">
+                <div class="front">
                     <h2><i class='fas fa-code'></i> Coding</h2>
                     <img class="imgHobby" src="img/coding.gif" alt="code">
                 </div>
                 
             </div>
             <div class="card" id="music">
-                <div class="main">
+                <div class="front">
                     <h2><i class='fas fa-music'></i> Music</h2>
                 <img class="imgHobby" src="img/music.gif" alt="music">
                 </div>
@@ -310,39 +334,18 @@
         </div>
     </section>
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
     <script>
+        const music = document.getElementById("music");
         const game = document.getElementById("game");
         const code = document.getElementById("code");
-        const music = document.getElementById("music");
-        const box = document.getElementById("hobint");
 
-        function setActive(activeItem) {
-            [game, code, music].forEach(item => {
-                item.style.transition = "all 1s";
-                if (item === activeItem) {
-                    
-                    item.style.flex = 5;
-                    item.style.alignItems = "flex-start";
-                    item.style.paddingRight = "25%"; 
-                } else {
-                    item.style.flex = 1;
-                    item.style.paddingRight = "0px"; 
-                }
-            });
-        }
-
-        game.addEventListener("mouseover", () => setActive(game));
-        music.addEventListener("mouseover", () => setActive(music));
-        code.addEventListener("mouseover", () => setActive(code));
-
-        box.addEventListener("mouseleave", () => {
-            [game, code, music].forEach(item => {
-                item.style.transition = "all 1s";
-                item.style.paddingRight = "0px"; 
-                item.style.flex = 1;
+        const list = [music,game,code];
+        list.forEach(card=>{
+            card.addEventListener("click",()=>{
+                card.classList.toggle("flip");
             });
         });
-
     </script>
     
 </body>
