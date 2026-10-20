@@ -23,6 +23,10 @@
             min-width: none;
         }
 
+        .sections h1{
+            font-size: 25px;
+        }
+
         body{
             background-color: #09092a;
             color: #57ebe8;
@@ -106,7 +110,7 @@
             border: 1px, solid;
             padding: 8px;
             background-color: #484872;
-            font-size: 28px;
+            font-size: 20px;
             color: #0f0e47;
         }
 
@@ -114,7 +118,7 @@
             border: 1px, solid;
             padding: 5px;
             background-color: #545472;
-            font-size: 25px;
+            font-size: 18px;
             color: #0f0e47;
         }
 
@@ -128,13 +132,11 @@
         }
 
         .container{
-            
-            width: 500px;
-            height: 570px;
-            border: 3px, solid;
+            width: 100%;
             border-radius: 15px;
             padding: 15px;
-            background-color: rgba(255, 255, 255, 0.078);
+            display: flex;
+            flex: 1 1 45%;;
         }
 
         .logo{
@@ -163,9 +165,18 @@
             border-radius: 15px;
             font-size: 18px;
             padding: 12px;
-            width: 80%;
+            width: 100%;
             border: 2px solid rgba(255, 255, 255, 0.156);
             color: white;
+        }
+
+        #contact{
+            border: #57ebe8 3px solid;
+            border-radius: 15px;
+            padding: 15px;
+            width: 50%;
+            margin-right: 20px;
+            background-color: rgba(255, 255, 255, 0.082);
         }
 
         #contact textarea{
@@ -182,11 +193,6 @@
             gap: 10px;
         } 
 
-        .container button{
-            margin: 15px;
-            transition: all 0.4s;
-        }
-
         .container button:hover{
             color: black;
             background-color: white;
@@ -198,6 +204,8 @@
             border-radius: 15px;
             padding: 15px;
             background-color: rgba(255, 255, 255, 0.082);
+            width: 50%;
+            
         }
 
 
@@ -213,7 +221,7 @@
             gap: 15px;
             margin: 5px;
             padding: 15px;
-            width: 500px;
+            width: 100%;
             height: 60px;
             text-align: left;
             font-size: 20px;
@@ -230,6 +238,34 @@
             transform: translateY(-3px);
         }
 
+        @media (max-width: 1000px){
+            .container-row{
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                justify-content: center;
+                height: 1200px;
+            }
+
+            .card{
+                height: 100%;
+            }
+        }
+
+        @media (max-width: 1000px){
+            .container{
+                display: flex;
+                flex-direction: column;
+                gap: 30px; 
+                justify-content: center;
+            }
+
+            #connection, #contact{
+                width: 100%;
+            }
+
+            
+        }
 
         
     </style>
@@ -304,8 +340,8 @@
     </section>
 <!----Contact Me----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <section class="sections">
-        <div style="display: flex; gap: 30px; justify-content: center;" id="contact" >
-            <div class="container">
+        <div class="container">
+            <div id="contact" >
                 <h1>Contact me</h1>
                 <div class="inputSec">
                     <div><i class="fas fa-user"></i> Name</div>
