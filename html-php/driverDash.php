@@ -89,7 +89,7 @@
                     $i = 3;
                     while($i>0 && $row = mysqli_fetch_assoc($resultNoti)){
                         echo 
-                        "<div class='notiContainer'>
+                        "<div class='boxContainer'>
                             <div class='boxToLeft'>
                                 <h4>{$row['topic']}</h4>
                                 {$row['description']}
