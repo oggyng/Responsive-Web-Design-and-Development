@@ -7,13 +7,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Awesome 5 font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <title>Document</title>
 </head>
 <body>
     <div class="pageContainer">      
         <h1>My Rides</h1>
         <div class="contentContainer">
-            <form action="pDriverSearchRide.php" method="post">
+            <form action="driverRide.php" method="post">
                 <h2>Add ride slot</h2>
                 <label class="inputLabel" for="selectDay">Select Day</label>
                 <br>
@@ -22,10 +26,10 @@
                     <script>
                         const today = new Date();
                         const nextMonday = today.getDate() + (8-today.getDay());
-                        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+                        const days = ['Mon','Tue','Wed','Thu','Fri'];
                         for(let i=0;i<5;i++){
                             today.setDate(nextMonday+i);
-                            document.write(`<option value='d${i}'>${today.toLocaleDateString()} ${days[i]}</option>`);
+                            document.write(`<option value='d${i}'>${today.toISOString().split('T')[0]} ${days[i]}</option>`);
                         }
                     </script>
                 </select>
@@ -73,7 +77,23 @@
             <h2>Rides</h2>
             <div class="boxContainer">
                 <?php
+                    $today = date_create();
+                    date_time_set($today,0,0,0);
+                    $todayDay = date_format($today,'D');
+                    // Make todayDay to numeric to add on to sumDate Output: +xxDay
+                    echo date_format($today,'Y/m/d');
                     
+                    if($todayDay == ''){
+                       $sumDate =  
+                    }
+                    $monday = date_modify($today,"");
+                    
+                    $query = "
+                    SELECT * FROM ride WHERE driverID={$_SESSION['userID']};
+                    ";
+                    for($i=0;$i<10;$i++){
+                        // echo '<i class="fa fa-train" aria-hidden="true"></i>';
+                    }
                 ?>
             </div>
         </div>
