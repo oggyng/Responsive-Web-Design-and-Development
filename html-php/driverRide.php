@@ -1,5 +1,6 @@
 <?php
     include('driverHeader.html');
+    include('database.php');
     session_start();
 ?>
 <!DOCTYPE html>
@@ -77,23 +78,39 @@
             <h2>Rides</h2>
             <div class="boxContainer">
                 <?php
-                    $today = date_create();
-                    date_time_set($today,0,0,0);
-                    $todayDay = date_format($today,'D');
-                    // Make todayDay to numeric to add on to sumDate Output: +xxDay
-                    echo date_format($today,'Y/m/d');
-                    
-                    if($todayDay == ''){
-                       $sumDate =  
+                    $nextMonday = date_create('next monday');
+                    if(date('w')==0){
+                        date_modify($nextMonday, '+7 days');
                     }
-                    $monday = date_modify($today,"");
+                    $friday = clone $nextMonday;
+                    date_modify($friday, '+5 days');
+                    $mon = date_format($nextMonday, 'Y-m-d');
+                    $fri = date_format($friday, 'Y-m-d');
                     
                     $query = "
-                    SELECT * FROM ride WHERE driverID={$_SESSION['userID']};
+                    SELECT * FROM ride r, station s WHERE r.stationID=s.stationID AND r.driverID='{$_SESSION['userID']}' AND r.departureDate BETWEEN '{$mon}' AND '{$fri}';
                     ";
-                    for($i=0;$i<10;$i++){
-                        // echo '<i class="fa fa-train" aria-hidden="true"></i>';
+
+                    $result = mysqli_query($conn, $query);
+
+                    if(mysqli_num_rows($result)>0){
+                        while($row = mysqli_fetch_assoc($result)){
+                            echo "
+                            <div>
+                                {$row['departureDate']} {$row['arrivalLeavingTime']}<br>
+                            ";
+
+                            if($row['direction']== 'To'){
+                                echo '<i class="fa fa-train" title="{$row["stationName"]}"></i> <i class="fas fa-arrow-right"></i> <i class="	fas fa-building"></i>';
+                            }
+                            else if($row['direction']== 'From'){
+                                echo  '<i class="fas fa-building"></i> <i class="fas fa-arrow-right"></i> <i class="fa fa-train" title="{$row["stationName"]}"></i>';
+                            }                            
+                            echo "</div>";
+                        }
                     }
+                    
+
                 ?>
             </div>
         </div>
