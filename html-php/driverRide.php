@@ -1,6 +1,4 @@
 <?php
-    include('driverHeader.html');
-    include('database.php');
     session_start();
 ?>
 <!DOCTYPE html>
@@ -15,6 +13,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?php include('driverHeader.html'); ?> 
     <div class="pageContainer">      
         <h1>My Rides</h1>
         <div class="contentContainer">
@@ -78,6 +77,8 @@
             <h2>Rides</h2>
             <div class="boxContainer">
                 <?php
+                    include('database.php');
+
                     $nextMonday = date_create('next monday');
                     if(date('w')==0){
                         date_modify($nextMonday, '+7 days');
@@ -101,16 +102,14 @@
                             ";
 
                             if($row['direction']== 'To'){
-                                echo '<i class="fa fa-train" title="{$row["stationName"]}"></i> <i class="fas fa-arrow-right"></i> <i class="	fas fa-building"></i>';
+                                echo "<i class='fa fa-train' title='{$row['stationName']}'></i> <i class='fas fa-arrow-right'></i> <i class='fas fa-building'></i>";
                             }
                             else if($row['direction']== 'From'){
-                                echo  '<i class="fas fa-building"></i> <i class="fas fa-arrow-right"></i> <i class="fa fa-train" title="{$row["stationName"]}"></i>';
+                                echo  " <i class='fas fa-building'></i> <i class='fas fa-arrow-right'></i> <i class='fa fa-train' title='{$row['stationName']}'></i>";
                             }                            
                             echo "</div>";
                         }
                     }
-                    
-
                 ?>
             </div>
         </div>

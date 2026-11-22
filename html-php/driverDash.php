@@ -1,6 +1,4 @@
 <?php
-    include("database.php");
-    include("driverHeader.html");
     session_start();
     $_SESSION["userID"] = "TP000001";
 ?>
@@ -18,6 +16,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?php include('driverHeader.html'); ?> 
     <div class="pageContainer">
         <h1>Dashboard</h1>
         <div class="contentContainer">
@@ -36,6 +35,8 @@
         <div class="contentContainer">
             <h2>Upcoming rides</h2>
             <?php
+                include("database.php");
+
                 $queryRide = "SELECT r.rideID, r.departureDate, r.arrivalLeavingTime, r.direction, s.stationName, COUNT(b.bookingID) AS bookedSeats, d.maxSeat,
                                 TIMESTAMPDIFF(MINUTE, NOW(), TIMESTAMP(r.departureDate, r.arrivalLeavingTime)) AS minutesUntil
                                 FROM ride r
@@ -51,6 +52,14 @@
                 $resultRide = mysqli_query($conn,$queryRide);
                 if(mysqli_num_rows($resultRide)>0){
                     $row = mysqli_fetch_assoc($resultRide);
+
+                    if($row['direction']== 'To'){
+                        $direction = "<i class='fa fa-train' title='{$row['stationName']}'></i> <i class='fas fa-arrow-right'></i> <i class='fas fa-building'></i>";
+                    }
+                    else if($row['direction']== 'From'){
+                        $direction = " <i class='fas fa-building'></i> <i class='fas fa-arrow-right'></i> <i class='fa fa-train' title='{$row['stationName']}'></i>";
+                    } 
+
                     echo 
                     "<div class='contentContainer'>
                         <div class='boxToLeft'>
@@ -61,10 +70,10 @@
                             Seats
                         </div>
                         <div class='boxToRight'>
-                            {$row["departureDate"]}
-                            {$row["arrivalLeavingTime"]}
-                            {$row["direction"]}
-                            {$row["stationName"]}
+                            {$row["departureDate"]}<br>
+                            {$row["arrivalLeavingTime"]}<br>
+                            {$direction}<br>
+                            {$row["stationName"]}<br>
                             {$row["bookedSeats"]}/{$row["maxSeat"]}
                         </div>
                     </div>";
@@ -116,7 +125,7 @@
                                     AND NOW() BETWEEN challenge.startDate AND challenge.endDate
                                     LIMIT 1;
                                     ";
-                $queryTotalTarget = "SELECT ROUND(COALESCE(SUM(s.distance * st.co2KgPerKm)),2) AS total 
+                $queryTotalTarget = "SELECT ROUND(COALESCE(SUM(s.distance * st.co2KgPerKm),0),2) AS total 
                                         FROM challenge c, ride r, booking b, station s, setting st 
                                         WHERE b.rideID=r.rideID
                                         AND s.stationID=r.stationID 
