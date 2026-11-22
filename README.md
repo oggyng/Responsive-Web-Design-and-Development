@@ -8,23 +8,139 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 ## **Completed**
 
-* (none yet)
+### Driver – Shared Layout (header, footer, menu)
+
+#### HTML
+* **Header** (`driverHeader.html`)
+  * Tabs: Dashboard, My Rides, Requests, Challenges & Badges
+  * Leaderboard icon (trophy), Notification icon (bell), Profile icon
+
+#### PHP
+* **Database**
+  * `database.php` connects to `cpu_carpool`
+
+---
+
+### Driver – Dashboard
+
+#### HTML
+* **Page title**
+  * "Dashboard"
+* **Next ride**
+  * Date, time, direction, station, seats x / y
+  * Empty state: "No upcoming rides"
+* **Latest notifications**
+  * 3 newest items (topic, description, date)
+  * Empty state: "No notifications"
+* **Current challenge**
+  * Name, description, `<progress>` bar
+  * Empty state: "You are not in a challenge yet" + Yes link
+
+#### PHP
+* **Next ride**
+  * Query with TIMESTAMPDIFF ≥ 0, ORDER BY ASC, LIMIT 1
+  * COUNT confirmed bookings + driver maxSeat
+* **Latest notifications**
+  * Where userID = this driver or target = All / Driver, newest first, show 3
+* **Current challenge**
+  * Challenge the driver joined where NOW() is between startDate and endDate
+  * Shared total CO2 within the challenge period
+
+---
+
+### Driver – My Rides
+
+#### HTML
+* **Page title**
+  * "My Rides"
+* **Add ride slot**
+  * Day select, time (hour + minute selects), direction select
+  * Submit + Reset buttons
+
+#### JS
+* **Add ride slot**
+  * Fill day options with next week's Monday–Friday dates
+
+#### PHP
+* **Week dates**
+  * Next week's Monday (skips a week on Sunday)
+* **Rides list**
+  * Query this driver's rides in next week with station name
+
+---
+
+### Driver – Requests
+
+#### HTML
+* **Page title**
+  * "Requests"
+
+#### PHP
+* **Request list**
+  * Query Pending bookings on this driver's rides with passenger details
+
+---
 
 ## **Progressing**
-
-* (none yet)
-
-## **Planned to do**
 
 ### Driver – Shared Layout (header, footer, menu)
 
 #### HTML
 * **Header**
   * Logo box + "CPU." text
-  * Tabs: Dashboard, My Rides, Requests, Challenges & Badges
-  * Leaderboard icon
-  * Notification icon with unread dot
-  * Profile picture (links to Profile)
+  * Notification unread dot
+  * Profile picture instead of the user icon
+
+#### PHP
+* **Includes**
+  * Header is included as a full HTML document (`driverHeader.html`) — turn into a header partial (no `<html>/<body>`)
+  * Highlight the current page's tab
+
+---
+
+### Driver – Dashboard
+
+#### HTML
+* **Statistics**
+  * Card + 3 empty chart divs (`rideChart`, `co2Chart`, `badgeChart`) — charts not drawn yet
+* **Current challenge**
+  * Add "x / y kg" text, participants, end date
+
+#### JS
+* **Statistics**
+  * Google Charts loader is linked — drawing code not written yet
+
+---
+
+### Driver – My Rides
+
+#### HTML
+* **Rides list**
+  * Date, time and direction icons shown
+  * Add seats x / y, status chip, Edit / Cancel buttons
+  * Empty state: "No rides this week"
+
+#### PHP
+* **Week dates**
+  * Friday is `+5 days` (that's Saturday) — should be `+4 days`
+
+---
+
+### Driver – Requests
+
+#### HTML
+* **Request list**
+  * Passenger picture, name, date, time, direction icons, one form per row
+  * Hidden bookingID + Accept / Decline submit buttons
+  * Fix buttons: `<input>` has no closing tag / inner text (first one shows "Action")
+
+---
+
+## **Planned to do**
+
+### Driver – Shared Layout (header, footer, menu)
+
+#### HTML
 * **Mobile menu**
   * ☰ button
   * Dropdown: 4 tabs + Profile + Logout
@@ -32,13 +148,15 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * "© CPU - Carpooling University"
 
 #### CSS
+* **Link a stylesheet** to the driver pages (none linked yet; `style.css` has none of the driver classes)
 * **Header**
   * Flex layout: logo left, tabs centre, icons right
   * Active tab style (dark pill, white text)
   * Unread dot position on the notification icon
 * **Layout**
-  * Fixed 720px content column, centred, page scrolls
-  * Shared card style (border, radius, padding)
+  * `.pageContainer`: fixed 720px column, centred, page scrolls
+  * `.contentContainer` / `.boxContainer`: card style (border, radius, padding)
+  * `.boxToLeft` / `.boxToRight`: label left, value right
 * **Mobile**
   * Hide tabs below mobile width, show ☰ button
   * Dropdown box style + active item
@@ -47,17 +165,22 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 * **Mobile menu**
   * Toggle dropdown open / close on ☰ click
   * Close dropdown when clicking outside it
+* **Clean up**
+  * `driverHeader.js` (document.write version linking .html pages) — remove or replace
 
 #### PHP
 * **Access control**
-  * Redirect to login if no session
-  * Redirect if role ≠ Driver
+  * `session_start()` before any include / output
+  * Remove the hard-coded `$_SESSION["userID"] = "TP000001"` once login exists
+  * Redirect to login if no session, redirect if role ≠ Driver
   * Show "Awaiting admin verification" if verifyStatus ≠ Approved
 * **Includes**
-  * header.php / footer.php shared by all driver pages
-  * Highlight the current page's tab
+  * Shared footer include
 * **Notification dot**
   * Compare newest notification date with the last-seen cookie
+* **Security**
+  * Change queries with `{$_SESSION[...]}` / user input to prepared statements
+  * `htmlspecialchars()` on names, descriptions and comments when echoing
 
 ---
 
@@ -65,57 +188,46 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### HTML
 * **Page title**
-  * "Dashboard" + short description
+  * Short description under "Dashboard"
 * **Statistics**
-  * Card with 3 pie chart boxes in one row
   * Labels: Rides vs last month, CO2 saved vs last month, Achievements unlocked
 * **Next ride**
-  * Date, time, direction, station, seats x / y booked
   * "View ride" button → My Rides
-  * Empty state: "No upcoming ride"
+  * Format date (dd/mm/yyyy) and time (hh:mm)
 * **Latest notifications**
-  * 3 newest items (title, description, date)
   * "View all" link → Notifications
 * **Current challenge**
-  * Title, description, progress bar, "x / y kg"
-  * Participants, end date
   * "View challenge" button → Challenges & Badges
-  * Empty state: "No challenge running"
 
 #### CSS
 * **Statistics**
   * Pie row with flexbox, equal widths, gap
   * Stack pies on narrow screens
 * **Next ride / Current challenge**
-  * Label–value rows (label left, value right)
-  * Progress bar (track + filled part)
+  * Label–value rows
+  * Progress bar style
 * **Latest notifications**
-  * Notification item style (title bold, description grey, date right)
+  * Item style (title bold, description grey, date right)
 
 #### JS
 * **Statistics**
-  * Load Google Charts once
+  * `google.charts.load` + `setOnLoadCallback`
   * drawPie() helper (no slice text, no legend, dark + light grey colours)
   * Draw the 3 pies from PHP data
   * Redraw on window resize
-* **Current challenge**
-  * Set progress bar width from percentage
 
 #### PHP
 * **Statistics**
-  * Rides this month vs last month (driver's rides with confirmed bookings)
-  * CO2 saved this month vs last month (distance × co2KgPerKm per confirmed booking)
+  * Rides this month vs last month
+  * CO2 saved this month vs last month
   * Badges unlocked vs total badges for All / Driver
   * Pass all three to JS with json_encode
-* **Next ride**
-  * Query with TIMESTAMPDIFF ≥ 0, ORDER BY ASC, LIMIT 1
-  * COUNT confirmed bookings + driver maxSeat
 * **Latest notifications**
-  * 3 newest where target = All / Driver or userID = this driver
+  * Use `LIMIT 3` in the query instead of the counter loop
 * **Current challenge**
-  * Challenge where NOW() is between startDate and endDate
-  * Shared total CO2 within the challenge period
+  * Show the running challenge even if the driver hasn't joined (with a Join link)
   * Participant count from challenger
+  * `COALESCE(SUM(...), 0)` — add the `, 0` (currently `COALESCE(SUM(...))`)
 
 ---
 
@@ -123,17 +235,12 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### HTML
 * **Page title**
-  * "My Rides" + description
+  * Short description
 * **Week tabs**
   * This week / Next week
 * **Add ride slot**
-  * Day, time, direction inputs
   * "Use timetable" option (fills time from timetable)
-  * Add button
-* **Rides list**
-  * Each ride: date, time, direction, seats x / y, status chip
-  * Edit and Cancel buttons
-  * Empty state: "No rides this week"
+  * Day option values = real dates (currently `d0`–`d4`)
 * **Edit ride**
   * Form (day, time, direction) + Save / Close
 * **Cancel confirm**
@@ -162,22 +269,25 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 #### PHP
 * **Week dates**
   * This week: monday this week → friday this week
-  * Next week: monday next week → friday next week
 * **Booking window**
   * Allow adding next week's rides only Monday 00:00 – Saturday 23:59
   * Check again on submit, not only on page load
 * **Add ride slot**
-  * Validate day / time / direction
+  * Handle the POST (not written yet)
+  * Build time from hour + minute (minute values are `.00`, `.15` — change to `00`, `15`)
+  * Map direction `to` / `from` to the ENUM values `To` / `From`
   * Generate rideID (RDnnnnnnn), use driver's stationID
   * Insert with prepared statement
 * **Rides list**
-  * Rides in selected week + COUNT confirmed bookings + maxSeat
+  * COUNT confirmed bookings + maxSeat
+  * ORDER BY date and time
+  * Station name in the icon `title` (single-quoted PHP string doesn't fill `{$row["stationName"]}`)
 * **Edit ride**
   * Allow only if ≥ 48 hours before departure
   * Update ride
   * Insert notification for each confirmed passenger
 * **Cancel ride**
-  * Set all its bookings to Cancelled
+  * Set all its bookings to Cancelled (add 'Cancelled' to booking.status ENUM first)
   * Notify confirmed passengers
 
 ---
@@ -186,18 +296,17 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### HTML
 * **Page title**
-  * "Requests" + description
+  * Short description
 * **Request list**
-  * Each request: passenger picture, name, date, time, direction
   * "Loyal" chip for loyal ride requests
-  * Accept / Decline buttons
   * Empty state: "No pending requests"
+  * Default picture when profilePicturePath is NULL
 * **Footer note**
   * "Requests close Saturday 11:59 PM" centred at the bottom
 
 #### CSS
 * **Request list**
-  * Item layout (picture, text, buttons on the right)
+  * Item layout (picture, text, buttons on the right) — move inline `style=` on the image into CSS
   * Accept dark button, Decline outline button
 * **Footer note**
   * Centred, grey text
@@ -209,13 +318,15 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### PHP
 * **Request list**
-  * Pending bookings on this driver's next-week rides
+  * Only next week's rides, ORDER BY date and time
   * Pending loyal requests for this driver
-* **Accept seat request**
-  * Seats left = maxSeat − confirmed bookings
-  * Seats left > 0 → Confirmed, else → Rejected ("Ride is full")
-* **Decline**
-  * Set booking Rejected
+  * Join station for the direction icon title
+* **Accept / Decline handler** (POST at top of page, before HTML)
+  * Check the booking belongs to this driver (JOIN ride … AND driverID = ?)
+  * Accept: seats left = maxSeat − confirmed → Confirmed, else Rejected ("Ride is full")
+  * Decline: set Rejected
+  * Only update when status is still Pending
+  * Redirect back after update (Post/Redirect/Get)
 * **Loyal request**
   * Approve → Ongoing, Decline → Cancelled
 * **Booking window**
