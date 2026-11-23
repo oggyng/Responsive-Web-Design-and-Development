@@ -93,7 +93,6 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### PHP
 * **Includes**
-  * Header is included as a full HTML document (`driverHeader.html`) — turn into a header partial (no `<html>/<body>`)
   * Highlight the current page's tab
 
 ---
@@ -120,10 +119,6 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * Add seats x / y, status chip, Edit / Cancel buttons
   * Empty state: "No rides this week"
 
-#### PHP
-* **Week dates**
-  * Friday is `+5 days` (that's Saturday) — should be `+4 days`
-
 ---
 
 ### Driver – Requests
@@ -132,7 +127,6 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 * **Request list**
   * Passenger picture, name, date, time, direction icons, one form per row
   * Hidden bookingID + Accept / Decline submit buttons
-  * Fix buttons: `<input>` has no closing tag / inner text (first one shows "Action")
 
 ---
 
@@ -148,7 +142,8 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * "© CPU - Carpooling University"
 
 #### CSS
-* **Link a stylesheet** to the driver pages (none linked yet; `style.css` has none of the driver classes)
+* **Stylesheet**
+  * Driver stylesheet linked on every driver page
 * **Header**
   * Flex layout: logo left, tabs centre, icons right
   * Active tab style (dark pill, white text)
@@ -165,22 +160,15 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 * **Mobile menu**
   * Toggle dropdown open / close on ☰ click
   * Close dropdown when clicking outside it
-* **Clean up**
-  * `driverHeader.js` (document.write version linking .html pages) — remove or replace
 
 #### PHP
 * **Access control**
-  * `session_start()` before any include / output
-  * Remove the hard-coded `$_SESSION["userID"] = "TP000001"` once login exists
   * Redirect to login if no session, redirect if role ≠ Driver
   * Show "Awaiting admin verification" if verifyStatus ≠ Approved
 * **Includes**
   * Shared footer include
 * **Notification dot**
   * Compare newest notification date with the last-seen cookie
-* **Security**
-  * Change queries with `{$_SESSION[...]}` / user input to prepared statements
-  * `htmlspecialchars()` on names, descriptions and comments when echoing
 
 ---
 
@@ -222,12 +210,9 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * CO2 saved this month vs last month
   * Badges unlocked vs total badges for All / Driver
   * Pass all three to JS with json_encode
-* **Latest notifications**
-  * Use `LIMIT 3` in the query instead of the counter loop
 * **Current challenge**
   * Show the running challenge even if the driver hasn't joined (with a Join link)
   * Participant count from challenger
-  * `COALESCE(SUM(...), 0)` — add the `, 0` (currently `COALESCE(SUM(...))`)
 
 ---
 
@@ -240,7 +225,6 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * This week / Next week
 * **Add ride slot**
   * "Use timetable" option (fills time from timetable)
-  * Day option values = real dates (currently `d0`–`d4`)
 * **Edit ride**
   * Form (day, time, direction) + Save / Close
 * **Cancel confirm**
@@ -273,15 +257,13 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
   * Allow adding next week's rides only Monday 00:00 – Saturday 23:59
   * Check again on submit, not only on page load
 * **Add ride slot**
-  * Handle the POST (not written yet)
-  * Build time from hour + minute (minute values are `.00`, `.15` — change to `00`, `15`)
-  * Map direction `to` / `from` to the ENUM values `To` / `From`
+  * Save the submitted ride (POST handler)
+  * Validate day / time / direction
   * Generate rideID (RDnnnnnnn), use driver's stationID
   * Insert with prepared statement
 * **Rides list**
   * COUNT confirmed bookings + maxSeat
-  * ORDER BY date and time
-  * Station name in the icon `title` (single-quoted PHP string doesn't fill `{$row["stationName"]}`)
+  * Sort by date and time
 * **Edit ride**
   * Allow only if ≥ 48 hours before departure
   * Update ride
@@ -306,7 +288,7 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### CSS
 * **Request list**
-  * Item layout (picture, text, buttons on the right) — move inline `style=` on the image into CSS
+  * Item layout (picture, text, buttons on the right)
   * Accept dark button, Decline outline button
 * **Footer note**
   * Centred, grey text
@@ -318,9 +300,8 @@ https://claude.ai/artifact/5rFAvRW2U7YhXz8fdGRAeN
 
 #### PHP
 * **Request list**
-  * Only next week's rides, ORDER BY date and time
+  * Only next week's rides, sorted by date and time
   * Pending loyal requests for this driver
-  * Join station for the direction icon title
 * **Accept / Decline handler** (POST at top of page, before HTML)
   * Check the booking belongs to this driver (JOIN ride … AND driverID = ?)
   * Accept: seats left = maxSeat − confirmed → Confirmed, else Rejected ("Ride is full")
