@@ -1,0 +1,2131 @@
+/* =====================================================================
+   home.css  -  only the home page (index.html)
+   needs base.css loaded first:  <link href="style/base.css"> then <link href="style/home.css">
+   ===================================================================== */
+
+/* TABLE OF CONTENTS  (same order as the page in index.html)
+   0. Anchors & smooth scroll
+   1. Splash / Intro          (.intro)
+   2. Hero                    (.hero-section)
+   3. How it works            (.how-section  - book + steps)
+   4. Why                     (.why-section  - scrolling cards)
+   5. Impact                  (.impact-section - plant + accordion)
+   6. About                   (.about-section - What is CPU / role pack + cards)
+   7. Team                    (.team-section - record player + albums)
+*/
+
+/* ==================================================================
+   0. ANCHORS & SMOOTH SCROLL
+   header does not cover the section when jumping to it
+   ================================================================== */
+
+#home   { scroll-margin-top: 60px; }
+#how    { scroll-margin-top: 60px; }
+#why    { scroll-margin-top: 80px; }
+#impact { scroll-margin-top: 60px; }
+#about  { scroll-margin-top: 60px; }
+#team   { scroll-margin-top: 78px; }
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+/* ==================================================================
+   1. SPLASH / INTRO
+   ================================================================== */
+
+.intro {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(to bottom, #d5ffcb, #ffbbc9);
+    transition: 1s;
+}
+
+.intro-logo {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12%;
+    height: auto;
+}
+
+.logo-header {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #4eb36c;
+    text-shadow: 3px 3px 0 #ffffff;
+    font-size: 3.0rem;
+    font-weight: 800;
+    letter-spacing: 5px;
+    font-family: "Titan One", sans-serif;
+}
+
+.logo {
+    position: relative;
+    display: inline-block;
+    bottom: -20px;
+    opacity: 0;
+}
+
+.logo.active {
+    bottom: 0;
+    opacity: 1;
+    transition: ease-in-out 0.5s;
+}
+
+.logo.fade {
+    bottom: 150px;
+    opacity: 0;
+    transition: ease-in-out 0.5s;
+}
+
+.planet-scene {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 50%;
+}
+
+.planet-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.car-slot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    transform: translate(-50%, calc(var(--by) * -1)) rotate(var(--rot));
+    transform-origin: 50% var(--by);
+}
+
+.car {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transform: translateY(60px) scale(0.5);
+    transform-origin: 50% var(--by);
+}
+
+.car.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.3s ease,
+                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bubbles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bubble {
+    --bg: rgba(255, 255, 255, 0.38);
+    --fg: #2f5d3a;
+    position: absolute;
+    max-width: 210px;
+    padding: 10px 16px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    backdrop-filter: blur(12px) saturate(1.4);
+    box-shadow: 0 8px 20px rgba(47, 93, 58, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+}
+
+.bubble.show {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.5s ease,
+                transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bubble.in { border-radius: 18px 18px 18px 4px; }
+
+.bubble.out {
+    --bg: rgba(43, 86, 57, 0.495);
+    --fg: #ffffff;
+    border-radius: 18px 18px 4px 18px;
+}
+
+.bubble::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 12px;
+    height: 14px;
+    background: var(--bg);
+}
+
+.bubble.in::after {
+    left: -11px;
+    clip-path: path('M12 0 L12 14 L2 14 Q10 12 12 0 Z');
+}
+
+.bubble.out::after {
+    right: -11px;
+    clip-path: path('M0 0 L0 14 L10 14 Q2 12 0 0 Z');
+}
+
+@keyframes drift {
+    50% { translate: 0 -8px; }
+}
+
+/* Skip button sits on the splash screen, so its colors stay fixed (dark mode oso) */
+.skip-btn {
+    color: #2f5d3a;
+    background: #fbf3e0;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 0 #e0d2b4, 0 8px 16px rgba(47, 93, 58, 0.15);
+}
+
+.skip-btn:hover { transform: translateY(-1px); }
+
+.skip-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #e0d2b4, 0 3px 6px rgba(47, 93, 58, 0.15);
+}
+
+.skip-btn:focus-visible {
+    outline: 3px solid #2f5d3a;
+    outline-offset: 3px;
+}
+
+/* ---------- Splash - responsive ---------- */
+
+@media (max-width: 1100px) {
+    .bubble {
+        max-width: 170px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Intro / Splash */
+    .intro { overflow: hidden; }
+    .planet-scene { width: 100%; }
+    .logo-header { top: 30%; font-size: 2.5rem; }
+    .intro-logo { top: 10%; width: 100px; }
+    .bubbles { display: none; }
+}
+
+/* ---------- Splash - motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+    .bubble.show { animation: drift 5s ease-in-out 1s infinite; }
+    .bubble.out.show { animation-delay: 1.8s; }
+}
+
+/* ==================================================================
+   2. HERO
+   ================================================================== */
+
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 50px;
+    min-height: calc(100svh - 80px);
+    background: var(--section-bg);
+    border-bottom: 2px solid var(--header-border);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.title-word { display: inline-block; white-space: nowrap; }
+
+.title-letter {
+    display: inline-block;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+}
+
+.title-letter:hover {
+    transform: scale(1.35) rotate(-6deg);
+    color: var(--heading);
+    z-index: 1;
+}
+
+.title-letter.pop { animation: letter-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes letter-pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.4) rotate(6deg); }
+    100% { transform: scale(1); }
+}
+
+.curved-title-box {
+    position: relative;
+    width: 320px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.curved-text-svg {
+    width: 100%;
+    height: 60px;
+    overflow: visible;
+}
+
+.curved-text-svg text {
+    font-family: "Patrick Hand", cursive;
+    font-weight: 700;
+    font-size: 22px;
+    fill: var(--curve-text);
+    letter-spacing: 2px;
+    transition: fill 0.4s ease;
+}
+
+.clover-link {
+    position: relative;
+    display: block;
+    width: fit-content;
+    margin: -6px auto 0;
+    border-radius: 50%;
+}
+
+.doodle-clover {
+    display: block;
+    width: 80px;
+    height: auto;
+    margin: -10px auto;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes sway {
+    50% { rotate: 6deg; }
+}
+
+/* hover: grow and tilt */
+.clover-link:hover .doodle-clover {
+    transform: scale(1.12) rotate(-8deg);
+}
+
+.clover-link::after {
+    content: "Lucky + 1";
+    font-family: "Patrick Hand", cursive;
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 100%;
+    transform: translate(-6px, -50%);
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    color: var(--text);
+    background: var(--btn-bg);
+    border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(47, 93, 58, 0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.clover-link:hover::after,
+.clover-link:focus-visible::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+}
+
+.clover-link:focus-visible {
+    outline: 3px solid var(--text);
+    outline-offset: 4px;
+}
+
+.hero-main-title {
+    font-family: "Titan One", cursive;
+    font-size: 3.5rem;
+    color: var(--heading);
+    position: relative;
+    letter-spacing: 2px;
+    margin: 10px 0;
+    transition: color 0.4s ease;
+}
+
+.hero-subtitle {
+    font-family: "Patrick Hand", cursive;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--sub);
+    margin-bottom: 30px;
+    transition: color 0.4s ease;
+}
+
+.hero-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+/* bottom strip: dashed line + cars (light) / star (dark) */
+.hero-strip {
+    container-type: inline-size;
+    --end-gap: 30px;
+    position: relative;
+    width: 100%;
+    height: 48px;
+    margin-top: auto;
+    border-top: 2px dashed var(--strip-line);
+    background-color: var(--strip-bg);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.hero-car {
+    --start: 30px;
+    position: absolute;
+    left: var(--start);
+    bottom: 95%;
+    width: 200px;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    translate: calc(var(--drive, 0) * (100cqw - 100% - var(--start) - var(--end-gap))) 0;
+    transition: translate 0.15s ease-out;
+    will-change: translate;
+}
+
+.hero-star {
+    --start: 40px;
+    position: absolute;
+    left: var(--start);
+    bottom: 80%;
+    width: 100px;
+    filter: drop-shadow(0 0 10px rgba(255, 224, 130, 0.45));
+    transform-origin: center;
+    translate: calc(var(--drive, 0) * (100cqw - 100% - var(--start) - var(--end-gap))) 0;
+    rotate: var(--roll, 0deg);
+    transition: translate 0.15s ease-out, rotate 0.15s ease-out;
+    will-change: translate, rotate;
+}
+
+[data-theme="dark"] .hero-car { display: none; }
+
+[data-theme="light"] .hero-star { display: none; }
+
+/* ---------- Hero - motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+    .doodle-clover { animation: sway 3.5s ease-in-out infinite; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .title-letter:hover { transform: none; }
+    .title-letter.pop { animation: none; }
+    .hero-car, .hero-star { translate: none; rotate: none; transition: none; }
+}
+
+/* ==================================================================
+   3. HOW IT WORKS
+   the page-turning book (big screens) + the step list (phones / no JS)
+   ================================================================== */
+
+/* ---------- Mini UI bits drawn inside the book pages ---------- */
+
+.how-section {
+    min-height: 100svh;
+    padding: 80px 20px;
+    text-align: center;
+    background-color: var(--section-bg);
+    border-bottom: 2px solid var(--header-border);
+    background-image: radial-gradient(color-mix(in srgb, var(--header-border) 45%, transparent) 1.2px, transparent 1.8px);
+    background-size: 24px 24px;
+    transition: background-color 0.4s ease;
+    overflow-x: clip;
+}
+
+.stop-label {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    color: var(--text);
+    background-color: var(--card-accent-bg);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.mini {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.chip, .field, .ride, .toast {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 2px solid var(--header-border);
+    background-color: var(--card-chip-bg);
+    color: var(--hero-btn-text);
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.chip.on {
+    background-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+}
+
+.field {
+    min-width: 130px;
+    border-radius: 10px;
+    opacity: 0.85;
+}
+
+.ride { border-style: dashed; border-radius: 12px; }
+
+.ride b { margin-left: 6px; }
+
+.toast {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--card-accent-bg);
+    color: var(--text);
+}
+
+.toast i {
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-style: normal;
+    font-size: 0.65rem;
+    background-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+}
+
+.bar {
+    flex: 1 1 100%;
+    height: 10px;
+    border: 2px solid var(--header-border);
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    overflow: hidden;
+}
+
+.bar i {
+    display: block;
+    width: 70%;
+    height: 100%;
+    background-color: var(--hero-btn-hover-bg);
+}
+
+/* Book */
+.book-wrap {
+    display: none;
+    width: min(92vw, 920px, max(560px, calc((100svh - 270px) * 1.4455)));
+    margin: 36px auto 0;
+    container-type: inline-size;
+
+    /* Content always light theme (book img same in both modes) */
+    --text: #2f5d3a;
+    --heading: #2b3a2a;
+    --sub: #657762;
+    --header-border: #a1df86;
+    --hero-btn-bg: #ffffff;
+    --hero-btn-text: #3b5e43;
+    --hero-btn-hover-bg: #3b5e43;
+    --hero-btn-hover-text: #ffffff;
+    --card-chip-bg: #ffffff;
+    --card-accent-bg: #d9f0b4;
+}
+
+.book {
+    position: relative;
+    aspect-ratio: 996 / 689;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.book:focus-visible {
+    outline: 3px dashed var(--header-border);
+    outline-offset: 8px;
+    border-radius: 16px;
+}
+
+.book-base {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 16px 16px rgba(0, 0, 0, 0.18));
+    pointer-events: none;
+}
+
+.book-pages {
+    position: absolute;
+    inset: 0;
+    perspective: 2600px;
+    perspective-origin: 50% 40%;
+}
+
+/* a page: its paper picture + the zone inside its frame where the content sits */
+.face-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+.zone {
+    position: absolute;
+    top: 1.932%;
+    width: 90.518%;
+    height: 96.055%;
+}
+
+.zone-front { left: 7.277%; }
+
+.zone-back { left: 2.205%; }
+
+/* the two pages that never move (first left page, last right page) */
+.sheet {
+    position: absolute;
+    top: 3.193%;
+    width: 45.532%;
+    height: 90.131%;
+}
+
+.sheet-left { left: 4.418%; }
+
+.sheet-right { left: 49.95%; }
+
+/* a leaf = one sheet of paper, hinged on the spine. front = text page, back = picture page */
+.leaf {
+    position: absolute;
+    top: 3.193%;
+    left: 49.95%;
+    width: 45.532%;
+    height: 90.131%;
+    transform-origin: 0 50%;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+
+.leaf.flipped { transform: rotateY(-180deg); }
+
+.leaf.peek:not(.flipped) { transform: rotateY(-11deg); transition-duration: 0.45s; }
+
+.leaf .face {
+    position: absolute;
+    inset: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.leaf .face-back { transform: rotateY(180deg); }
+
+/* soft shade that darkens a page while it turns away */
+.leaf .face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+}
+
+.leaf .face-front::after { background: linear-gradient(to right, rgba(70, 55, 30, 0.34), rgba(70, 55, 30, 0) 75%); }
+
+.leaf .face-back::after { background: linear-gradient(to left,  rgba(70, 55, 30, 0.34), rgba(70, 55, 30, 0) 75%); }
+
+.leaf.flipped .face-front::after { opacity: 1; }
+
+.leaf:not(.flipped) .face-back::after { opacity: 1; }
+
+/* Right page: the words */
+.text-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 6cqw 4.4cqw;
+    text-align: left;
+}
+
+.book .stop-label {
+    margin-bottom: 1.2cqw;
+    padding: 0.25cqw 1.1cqw;
+    font-size: max(10px, 1.3cqw);
+}
+
+.text-page h3 {
+    width: 100%;
+    padding-bottom: 1.3cqw;
+    border-bottom: 2px dashed var(--header-border);
+    font-family: var(--font-title);
+    font-size: max(18px, 3.2cqw);
+    line-height: 1.1;
+    letter-spacing: 0.08cqw;
+    color: var(--heading);
+}
+
+.text-page p {
+    margin-top: 1.6cqw;
+    font-family: "Patrick Hand", cursive;
+    font-size: max(13px, 2.15cqw);
+    line-height: 1.35;
+    color: var(--sub);
+}
+
+/* Left page: the picture */
+.art-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.8cqw;
+    padding: 4cqw 3cqw;
+}
+
+.page-art {
+    position: relative;
+    width: 31cqw;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    border: 2px dashed var(--header-border);
+    border-radius: 3cqw;
+    background: rgba(217, 240, 180, 0.35);
+
+}
+
+.page-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+}
+
+/* if no picture displayed show label */
+.page-art.no-art img { display: none; }
+
+.page-art.no-art::after {
+    content: attr(data-label);
+    font-family: var(--mono);
+    font-size: max(10px, 1.4cqw);
+    letter-spacing: 0.1cqw;
+    color: var(--sub);
+}
+
+.book .mini {
+    justify-content: center;
+    max-width: 27cqw;
+    margin-top: 0;
+    gap: 0.9cqw;
+}
+
+.book .chip,
+.book .field,
+.book .ride,
+.book .toast {
+    padding: 0.35cqw 1cqw;
+    font-size: max(10px, 1.3cqw);
+}
+
+.book .field { min-width: 11cqw; }
+
+.book .toast i { width: 1.7cqw; height: 1.7cqw; min-width: 14px; min-height: 14px; font-size: max(8px, 0.9cqw); }
+
+.book .bar { height: 1.2cqw; min-height: 9px; }
+
+/* arrows + dots under the book */
+.book-controls {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 26px;
+}
+
+.book-arrow {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 2px solid var(--hero-btn-text);
+    border-radius: 50%;
+    background-color: var(--hero-btn-bg);
+    color: var(--hero-btn-text);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--hero-btn-text);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.book-arrow:hover:not(:disabled) {
+    background-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+    border-color: var(--hero-btn-hover-bg);
+    box-shadow: 0 6px 0 var(--hero-btn-hover-shadow);
+    transform: translateY(-2px);
+}
+
+.book-arrow:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--hero-btn-text); }
+
+.book-arrow:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
+
+.book-dots { display: flex; gap: 12px; }
+
+.book-dot {
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border: 2px solid var(--hero-btn-text);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.book-dot:hover { transform: scale(1.2); }
+
+.book-dot[aria-current="true"] { background-color: var(--hero-btn-hover-bg); transform: scale(1.3); }
+
+.book-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* the book appears gently when the section scrolls into view */
+.book-wrap.reveal-ready { opacity: 0; translate: 0 28px; }
+
+.book-wrap.reveal-ready.in { opacity: 1; translate: 0 0; transition: opacity 0.7s ease, translate 0.7s ease; }
+
+.how-steps {
+    list-style: none;
+    max-width: 520px;
+    margin: 40px auto 0;
+    padding: 0;
+    display: grid;
+    gap: 24px;
+    text-align: left;
+}
+
+.how-step {
+    padding: 20px 22px;
+    border: 2px dashed var(--header-border);
+    border-radius: 24px;
+    background-color: var(--card-bg);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.how-step h3 {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    letter-spacing: 1.5px;
+    color: var(--heading);
+}
+
+.how-step p {
+    margin-top: 6px;
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.1rem;
+    line-height: 1.35;
+    color: var(--sub);
+}
+
+.how-step .page-art { width: min(100%, 240px); margin: 0 auto 14px; }
+
+/* big screens: show the book, hide the list (but keep it for screen readers) */
+@media (min-width: 721px) {
+    .how-section.book-ready .book-wrap { display: block; }
+    .how-section.book-ready .book-controls { display: flex; }
+    .how-section.book-ready .how-steps {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}
+
+.how-cta { margin-top: 64px; }
+
+.how-cta h3 {
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    color: var(--heading);
+    transition: color 0.4s ease;
+}
+
+.how-cta .hero-buttons { margin-top: 20px; }
+
+/* ---------- How - motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .leaf, .leaf .face::after { transition: none; }
+    .book-wrap.reveal-ready { opacity: 1; translate: none; }
+}
+
+/* ==================================================================
+   4. WHY
+   ================================================================== */
+
+.why-section {
+    background-color: var(--section-bg);
+    border-bottom: 2px solid var(--header-border);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.why-sticky {
+    padding: 50px 0 50px;
+}
+
+.why-head {
+    padding: 0 8vw;
+    text-align: center;
+}
+
+.why-count {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    color: var(--text);
+    background-color: var(--card-accent-bg);
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* default (phones, reduced motion, no JS): a normal swipe row */
+.why-track {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    padding: 50px 8vw 40px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+
+.why-card {
+    position: relative;
+    flex: 0 0 min(300px, 78vw);
+    scroll-snap-align: start;
+    padding: 18px 18px 22px;
+    text-align: left;
+    border: 2px dashed var(--header-border);
+    border-radius: 28px;
+    background-color: var(--card-bg);
+    rotate: -1.2deg;
+    transition: background-color 0.4s ease, border-color 0.4s ease,
+                rotate 0.3s ease, scale 0.3s ease;
+}
+
+.why-card:nth-child(even) { rotate: 1.2deg; translate: 0 28px; }
+
+.why-card:hover { rotate: 0deg; scale: 1.03; }
+
+.why-art {
+    position: relative;
+    height: clamp(130px, 24vh, 190px);
+    display: grid;
+    place-items: center;
+    margin-bottom: 18px;
+    border-radius: 20px;
+    background-color: var(--section-bg);
+    transition: background-color 0.4s ease;
+}
+
+.why-art img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    padding: 14px;
+    object-fit: contain;
+    object-position: center center;
+}
+
+/* the small floating "app" card on top of each picture */
+.why-float {
+    position: absolute;
+    right: -10px;
+    bottom: -14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 2px solid var(--header-border);
+    border-radius: 14px;
+    rotate: 4deg;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    white-space: nowrap;
+    color: var(--text);
+    background-color: var(--card-chip-bg);
+    box-shadow: 0 4px 0 var(--btn-shadow);
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+.why-float b {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    background-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+}
+
+.why-card h3 {
+    margin: 4px 0 6px;
+    font-family: var(--font-title);
+    font-size: 1.35rem;
+    color: var(--heading);
+    transition: color 0.4s ease;
+}
+
+.why-card p {
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    color: var(--sub);
+    transition: color 0.4s ease;
+}
+
+.why-section.why-marquee { overflow-x: clip; }
+
+.why-section.why-marquee .why-track {
+    width: max-content;
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+}
+
+/* ==================================================================
+   5. IMPACT
+   ================================================================== */
+
+.impact-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 80px 20px;
+    min-height: 94svh;
+    background: var(--section-bg);
+    border-bottom: 2px solid var(--header-border);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.impact-head {
+    padding: 0 8vw;
+    text-align: center;
+}
+
+/* 左右大容器 */
+.eco-container {
+    max-width: 1100px;
+    margin: 40px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 0 20px;
+}
+
+.eco-left-preview {
+    flex: 1;
+    height: 380px;
+    background: var(--card-bg);
+    border: 2px dashed var(--header-border);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.plant-stage-img {
+    max-width: 80%;
+    max-height: 75%;
+    object-fit: contain;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.plant-badge {
+    position: absolute;
+    bottom: 20px;
+    background: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-family: "DynaPuff", system-ui;
+    font-size: 0.85rem;
+}
+
+.eco-right-accordion.card {
+    width: 520px;
+    height: 380px;
+    border-radius: 24px;
+    background: var(--card-bg);
+    border: 2px dashed var(--header-border);
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.eco-panel {
+    height: 100%;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 16px;
+    background: var(--section-bg);
+    border: 2px solid var(--header-border);
+    transition: flex .5s cubic-bezier(0.34, 1.25, 0.64, 1), border-color .3s;
+}
+
+/* 鼠标悬停或系统自动选中时展开 */
+.eco-panel:hover,
+.eco-panel.active {
+    flex: 5;
+    border-color: var(--hero-btn-hover-bg);
+}
+
+/* 标题：收起时竖着居中，展开时移到顶部变横 */
+.eco-title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    min-width: 14em;
+    text-align: center;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transition: top .5s cubic-bezier(0.34, 1.25, 0.64, 1), transform .5s;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text);
+    font-family: "DynaPuff", system-ui;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.eco-panel:hover .eco-title,
+.eco-panel.active .eco-title {
+    top: 28px;
+    transform: translate(-50%, -50%) rotate(0);
+    font-weight: bold;
+}
+
+.eco-content {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    width: 250px;
+    transform: translateX(-50%) translateY(10px);
+    opacity: 0;
+    pointer-events: none;
+    text-align: left;
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    transition: opacity .3s, transform .4s;
+    font-family: "DynaPuff", system-ui;
+}
+
+.eco-panel:hover .eco-content,
+.eco-panel.active .eco-content {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    transition-delay: .25s;
+}
+
+.eco-content p {
+    margin: 0 0 8px;
+}
+
+.eco-content ul {
+    margin: 0;
+    padding-left: 1.2em;
+}
+
+.eco-content li {
+    margin-bottom: 4px;
+}
+
+/* 小标签：1 ride / 1 month ... */
+.eco-tag {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+    font-family: "DynaPuff", system-ui;
+    font-size: 0.7rem;
+    letter-spacing: .05em;
+}
+
+@media (max-width: 768px) {
+    .eco-container {
+        flex-direction: column;
+    }
+
+    .eco-left-preview {
+        width: 100%;
+        height: 280px;
+    }
+
+    .eco-right-accordion.card {
+        width: 100%;
+        height: 340px;
+    }
+
+    .eco-content {
+        width: calc(100% - 24px);
+    }
+}
+
+/* ==================================================================
+   6. ABOUT
+   What is CPU? / Who uses CPU? (role pack -> 4 role cards)
+   ================================================================== */
+
+.about-section {
+    min-height: 100vh;
+    padding: 80px 20px 20px;
+    text-align: center;
+    background-color: var(--section-bg);
+    transition: background-color 0.4s ease;
+    overflow-x: clip;
+}
+
+.about-talk {
+    max-width: 860px;
+    margin: 10px auto 0;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 20px;
+
+    /* 全部用 base.css 的变量，dark / light 会自动切换 */
+    --talk-ink: var(--text);                  /* 文字 */
+    --talk-line: var(--header-border);        /* 边框 */
+    --talk-paper: var(--hero-btn-bg);         /* 对话框、选项的底色 */
+    --talk-deep: var(--hero-btn-hover-bg);    /* ▾ 箭头、焦点框、选项 hover 底色 */
+    --talk-deep-text: var(--hero-btn-hover-text);   /* 选项 hover 的文字 */
+}
+
+.talk-star {
+    position: relative;
+    width: clamp(240px, 34vw, 380px);
+}
+
+.talk-star-body { display: grid; }
+
+.star-face {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* the open-mouth picture sits on top of the closed one and is switched on / off by app.js */
+.face-open { opacity: 0; }
+
+.talk-star.mouth-open .face-open { opacity: 1; }
+
+/* lightbulb: dim while the star is quiet, lights up while it answers */
+.talk-bulb {
+    position: absolute;
+    top: -2%;
+    right: -4%;
+    width: 44%;
+    height: auto;
+    opacity: 0.3;
+    filter: grayscale(0.7);
+    transform-origin: 50% 80%;
+    transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+.talk-star.lit .talk-bulb {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(255, 254, 233, 0.9));
+}
+
+.talk-side {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* the star's speech bubble (tail points to the star) */
+.talk-bubble {
+    position: relative;
+    box-sizing: border-box;
+    min-height: 112px;
+    padding: 16px 44px 18px 24px;
+    text-align: left;
+    background: var(--talk-paper);
+    border: 3px solid var(--talk-line);
+    border-radius: 24px;
+    box-shadow: 0 6px 0 color-mix(in srgb, var(--header-border) 45%, transparent);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    color: var(--talk-ink);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.talk-bubble::before,
+.talk-bubble::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    border: 12px solid transparent;
+    transform: translateY(-50%);
+}
+
+.talk-bubble::before {
+    left: -27px;
+    border-right-color: var(--talk-line);
+}
+
+.talk-bubble::after {
+    left: -21px;
+    border-right-color: var(--talk-paper);
+}
+
+.talk-text { margin: 0; }
+
+/* the part of the sentence that is not typed yet keeps its space, so the bubble does not jump */
+.t-rest { visibility: hidden; }
+
+.talk-next {
+    position: absolute;
+    right: 14px;
+    bottom: 6px;
+    padding: 4px 8px;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: var(--talk-deep);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.talk-next:focus-visible,
+.talk-option:focus-visible {
+    outline: 3px dashed var(--talk-deep);
+    outline-offset: 3px;
+}
+
+/* the visitor's choices */
+.talk-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.talk-menu[hidden] { display: none; }
+
+.talk-option {
+    padding: 8px 20px 8px 16px;
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.25rem;
+    color: var(--talk-ink);
+    background: var(--talk-paper);
+    border: 2px dashed var(--talk-line);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.talk-option::before { content: "\25B8\00a0"; }
+
+.talk-option:hover {
+    color: var(--talk-deep-text);
+    background: var(--talk-deep);
+    transform: translateX(4px);
+}
+
+.talk-noscript {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+/* only for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* phones: star on top, bubble under it (tail points up) */
+@media (max-width: 720px) {
+    .about-talk {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 6px;
+    }
+    .talk-star { width: min(62vw, 240px); }
+    .talk-side { width: 100%; min-height: 270px; justify-content: flex-start; }
+    .talk-bubble { font-size: 1.25rem; }
+    .talk-bubble::before,
+    .talk-bubble::after {
+        top: auto;
+        left: 50%;
+        border-right-color: transparent;
+        transform: translateX(-50%);
+    }
+    .talk-bubble::before { top: -27px; border-bottom-color: var(--talk-line); }
+    .talk-bubble::after { top: -21px; border-bottom-color: var(--talk-paper); }
+    .talk-menu { align-items: center; }
+}
+
+/* About - motion (app.js adds .reveal-ready first, then .in when the block scrolls into view) */
+@media (prefers-reduced-motion: no-preference) {
+    .talk-star.talking .talk-star-body { animation: talk-bob 0.36s ease-in-out infinite; }
+
+    .talk-star.lit .talk-bulb { animation: bulb-pop 0.5s ease-out; }
+
+    .talk-next { animation: next-bounce 0.9s ease-in-out infinite; }
+
+    .talk-bubble:not([hidden]),
+    .talk-menu:not([hidden]) { animation: talk-pop 0.25s ease-out; }
+}
+
+@keyframes talk-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes bulb-pop {
+    0% { transform: scale(0.6) rotate(-12deg); }
+    60% { transform: scale(1.2) rotate(6deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes next-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+}
+
+@keyframes talk-pop {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.about-block {
+    padding: 30px 0;
+}
+
+#about-cpu {
+    min-height: calc(100svh - 160px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 0;
+}
+
+.about-block + .about-block {
+    border-top: 2px dashed var(--header-border);
+    padding-top: 60px;
+}
+
+.about-block-title {
+    margin-bottom: 12px;
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    color: var(--heading);
+    text-align: center;
+    transition: color 0.4s ease;
+}
+
+/* ---------- About - role pack (the bag you tear open) ---------- */
+
+.roles-pack-wrapper {
+    position: relative;
+    max-width: 1000px;
+    height: 520px;
+    margin: 35px auto 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1400px;
+}
+
+.role-pack {
+    position: absolute;
+    width: 350px;
+    height: auto;
+    z-index: 20;
+    --tear: 0;                                           /* 撕开了多少：0 到 1（由 app.js 控制） */
+    --tx: calc(28px + var(--tear) * (100% - 56px));      /* 撕口的位置 = 箭头的中心 */
+    cursor: default;                                     /* 只有箭头可以拖 */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.role-pack:hover {
+    transform: scale(1.04) rotate(-1deg);
+}
+
+/* 完整包装（撕开前） */
+.pack-img-full {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+    transition: opacity 0.3s ease;
+}
+
+/* 撕开后剩下的身子：默认隐藏，触发 ripped 时淡入并稍微下沉 */
+.pack-img-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* 撕开飞出的顶部 */
+.pack-img-rip-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 25;
+}
+
+.pack-rip-strip {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(43, 86, 57, 0.85);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 3px 12px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    z-index: 30;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: opacity 0.3s ease;
+}
+
+/* 点击后触发的撕开退场动画 */
+.role-pack.ripped {
+    cursor: default;
+    pointer-events: none;
+}
+
+.role-pack.ripped .pack-rip-strip {
+    opacity: 0;
+}
+
+/* 撕开前整张图隐藏 */
+.role-pack.ripped .pack-img-full {
+    opacity: 0;
+}
+
+/* 撕开后剩下的身子显示出来，并在 0.8 秒后整体淡出消失，让位给小卡片 */
+.role-pack.ripped .pack-img-body {
+    opacity: 1;
+    transform: translateY(15px);
+    animation: bodyFadeOut 0.5s ease 0.4s forwards;
+}
+
+@keyframes bodyFadeOut {
+    0% { opacity: 1; transform: translateY(15px); }
+    100% { opacity: 0; transform: translateY(40px); visibility: hidden; }
+}
+
+/* 顶部飞出动画 */
+.role-pack.ripped .pack-img-rip-top {
+    opacity: 1;
+    animation: ripTopFly 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes ripTopFly {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-90px) translateX(40px) rotate(30deg) scale(1.05);
+        opacity: 0;
+    }
+}
+
+/* 拖的时候不要晃动 */
+.role-pack.pulling,
+.role-pack.pulling:hover { transform: none; }
+
+/* 箭头把手 */
+.pack-pull {
+    position: absolute;
+    top: 15px;
+    left: var(--tx);
+    translate: -17px 0;                                  /* 让箭头圆圈的中心刚好在撕口上 */
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px 4px 4px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(43, 86, 57, 0.88);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    cursor: grab;
+    touch-action: none;                                  /* 手机上横向拖不会变成滚动页面 */
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: padding 0.25s ease, opacity 0.3s ease;
+}
+
+.role-pack.pulling .pack-pull { cursor: grabbing; padding-right: 4px; }
+
+.pack-pull-arrow {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff;
+    color: rgb(43, 86, 57);
+    font-size: 1rem;
+    line-height: 1;
+    animation: pullHint 1.4s ease-in-out infinite;       /* 箭头轻轻往右动，提示可以拉 */
+}
+
+.role-pack.pulling .pack-pull-arrow { animation: none; }
+
+@keyframes pullHint { 0%, 100% { translate: 0 0; } 50% { translate: 3px 0; } }
+
+.pack-pull-text {
+    max-width: 120px;
+    overflow: hidden;
+    transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+/* 开始拉以后，只剩箭头 */
+.role-pack.pulling .pack-pull-text { max-width: 0; opacity: 0; }
+
+.role-pack.ripped .pack-pull { opacity: 0; pointer-events: none; }
+
+/* 拉的时候：完整的包装换成「身子 + 两段顶部」 */
+.role-pack.pulling:not(.ripped) .pack-img-full,
+.role-pack.pulling:not(.ripped) .pack-img-body { transition: none; }
+
+.role-pack.pulling .pack-img-full { opacity: 0; }
+
+.role-pack.pulling .pack-img-body { opacity: 1; }
+
+/* 还没被撕开的顶部：只显示撕口右边那一段 */
+.role-pack.pulling .pack-img-rip-top {
+    opacity: 1;
+    clip-path: inset(0 0 0 var(--tx));
+}
+
+/* 已经被撕开的顶部：只显示撕口左边那一段，并且以撕口为轴往上翘 */
+.pack-img-rip-torn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 26;
+    transform-origin: var(--tx) 0;
+}
+
+.role-pack.pulling .pack-img-rip-torn {
+    opacity: 1;
+    clip-path: inset(0 calc(100% - var(--tx)) 0 0);
+    transform: rotate(calc(var(--tear) * 16deg));
+}
+
+/* 撕开完成：被撕下来的那一段飞走 */
+.role-pack.ripped .pack-img-rip-torn {
+    animation: tornFly 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes tornFly {
+    0%   { transform: rotate(16deg); opacity: 1; }
+    100% { transform: translate(-30px, -130px) rotate(40deg); opacity: 0; }
+}
+
+/* ---------- About - the 4 role cards ---------- */
+
+/* 菱形卡片容器：默认彻底隐藏（visibility: hidden），防止未开封时漏出来 */
+.roles-cards-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10;
+    top: -40px;
+    transform: scale(var(--gs, 1));                      /* 小屏幕时整排一起缩小 */
+}
+
+.roles-cards-grid.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.role-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 450px;
+    perspective: 1000px;
+    cursor: pointer;
+    transform: translate(-50%, -50%) scale(0.6);      /* 开袋前：全部叠在中间 */
+    opacity: 0;
+    z-index: 1;
+    transition: transform 0.7s cubic-bezier(0.34, 1.25, 0.64, 1),
+                opacity 0.4s ease,
+                z-index 0.7s,
+                filter 0.3s ease;
+}
+
+.roles-cards-grid.active .role-card { opacity: 1; }
+
+/* 4 个位置（data-slot 由 app.js 控制）：0 = 前面 1 = 右边 2 = 右后面 3 = 左边 */
+.roles-cards-grid.active .role-card[data-slot="0"] { transform: translate(-50%, -46%) scale(1.15); z-index: 10; }
+
+.roles-cards-grid.active .role-card[data-slot="1"] { transform: translate(calc(-50% + 270px), -50%) scale(0.9) rotate(4deg);   z-index: 6; }
+
+.roles-cards-grid.active .role-card[data-slot="2"] { transform: translate(calc(-50% + 360px), -53%) scale(0.8) rotate(8deg);   z-index: 3; }
+
+.roles-cards-grid.active .role-card[data-slot="3"] { transform: translate(calc(-50% - 270px), -50%) scale(0.9) rotate(-4deg);  z-index: 5; }
+
+/* 刚开袋时，四张卡片一张一张散开（散开之后 app.js 会加上 .dealt，点击换位置就不用再等） */
+.roles-cards-grid.active:not(.dealt) .role-card[data-slot="0"] { transition-delay: 0.1s; }
+
+.roles-cards-grid.active:not(.dealt) .role-card[data-slot="1"] { transition-delay: 0.25s; }
+
+.roles-cards-grid.active:not(.dealt) .role-card[data-slot="3"] { transition-delay: 0.4s; }
+
+.roles-cards-grid.active:not(.dealt) .role-card[data-slot="2"] { transition-delay: 0.55s; }
+
+/* hover 只加阴影，不改位置和大小（改位置会让卡片躲开鼠标，就会闪） */
+.role-card:hover { filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.25)); }
+
+/* 屏幕小的时候，整排一起缩小 */
+@media (max-width: 1100px) {
+    .roles-cards-grid { --gs: 0.8; }
+}
+
+@media (max-width: 800px) {
+    .roles-cards-grid { --gs: 0.62; }
+}
+
+@media (max-width: 520px) {
+    .roles-cards-grid { --gs: 0.5; }
+    .roles-pack-wrapper { height: 400px; }
+}
+
+.role-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-card.flipped .role-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* 正面与背面 */
+.role-card-front, .role-card-back {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: hidden;
+}
+
+/* role card (front) */
+.role-card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* role card - role info (back)*/
+.role-card-back {
+    transform: rotateY(180deg);
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    padding: 125px 115px 64px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.card-info-content {
+    position: relative;
+    z-index: 5;
+}
+
+.role-card-back h4 {
+    font-family: var(--font-title);
+    font-size: 1rem;
+    color: #2b3a2a;
+    margin-bottom: 3px;
+}
+
+.role-desc {
+    font-family: "Patrick Hand", cursive;
+    font-size: 0.78rem;
+    color: #657762;
+    line-height: 1.2;
+    margin-bottom: 6px;
+}
+
+.role-features {
+    list-style: none;
+    font-family: "Patrick Hand", cursive;
+    font-size: 0.74rem;
+    color: #2f5d3a;
+}
+
+.role-features li {
+    position: relative;
+    padding-left: 10px;
+    margin-bottom: 2px;
+}
+
+.role-features li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #4eb36c;
+}
+
+.role-card.focused {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 270px;
+    height: 380px;
+    transform: translate(-50%, -50%) scale(1) !important;
+    z-index: 999 !important;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.25));
+}
+
+.role-card.focused .role-card-back {
+    padding: 24px 18px;
+}
+
+.role-card.focused .role-card-back h4 { font-size: 1.3rem; }
+
+.role-card.focused .role-desc { font-size: 0.95rem; }
+
+.role-card.focused .role-features { font-size: 0.9rem; }
+
+.role-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.role-modal-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==================================================================
+   7. TEAM
+   ================================================================== */
+
+.team-section {
+    border-top: 2px solid var(--header-border);
+    min-height: 100vh;
+    padding: 50px 20px;
+    text-align: center;
+    background-color: var(--section-bg);
+    transition: background-color 0.4s ease;
+}
+
+.team-container {
+    max-width: 1050px;
+    margin: 50px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.record-player-container {
+    flex: 1 1 300px;
+    max-width: 380px;
+    transform: translateX(-30px);
+    position: relative;
+}
+
+.record-player-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
+}
+
+.turntable-video {
+    position: absolute;
+    top: 23%;
+    left: 3.5%;
+    width: 75%;
+    height: auto;
+    pointer-events: none;
+    z-index: 2;
+    visibility: hidden;
+}
+
+.turntable-video.playing {
+    visibility: visible;
+}
+
+.notes-container {
+    position: absolute;
+    top: 40%;
+    left: 25%;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes floatNoteImg {
+    0% {
+        transform: translate(0, 0) scale(0.4) rotate(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--end-x, 0px), -180px) scale(1.3) rotate(var(--end-rot, 30deg));
+        opacity: 0
+    }
+}
+
+.floating-note-img {
+    position: absolute;
+    width: 65px;
+    height: auto;
+    animation: floatNoteImg 2.2s ease-out forwards;
+    pointer-events: none;
+    user-select: none;
+}
+
+.members-grid {
+    flex: 1 1 340px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 90px;
+    max-width: 480px;
+}
+
+.album-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+}
+
+.album-cover {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    background-color: #f7e7c4;
+}
+
+.album-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.member-name {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    background: var(--btn-bg);
+    padding: 2px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.vinyl-record {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    z-index: 1;
+    transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+    pointer-events: none;
+}
+
+.vinyl-record img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+@keyframes spinVinyl {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.album-card:hover .vinyl-record {
+    transform: translateX(50%);
+}
+
+.album-card:hover .vinyl-record img {
+    animation: spinVinyl 3.2s linear infinite;
+}
+
+.album-card:hover .album-cover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 768px) {
+    .team-container {
+        flex-direction: column;
+        gap: 35px;
+    }
+    .members-grid {
+        gap: 30px 45px;
+    }
+}

@@ -1,0 +1,542 @@
+/* =====================================================================
+   auth.css  -  login + sign up pages
+   needs base.css loaded first (colours, dark mode, header, .hero-btn, .form-group ...)
+   ===================================================================== */
+
+.auth-page {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-page [hidden] { display: none !important; }
+
+/* the only colours that are NOT from base.css: error messages */
+.auth-page {
+    --auth-err: #c2553a;
+    --auth-err-bg: #fdeee9;
+    --auth-err-text: #a8432a;
+}
+[data-theme="dark"] .auth-page {
+    --auth-err: #ff9d85;
+    --auth-err-bg: rgba(224, 122, 95, 0.14);
+    --auth-err-text: #ffb4a0;
+}
+
+/* header: it is a link back home, and the "Back to home" button is a link too */
+.auth-page a.logo-container { text-decoration: none; color: inherit; }
+.auth-page .nav-btn { display: inline-block; text-decoration: none; }
+
+/* Page Layout*/
+.auth-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 28px 20px 24px;
+    background-color: var(--section-bg);
+    background-image: radial-gradient(color-mix(in srgb, var(--header-border) 45%, transparent) 1.2px, transparent 1.8px);
+    background-size: 24px 24px;
+    transition: background-color 0.4s ease;
+}
+
+.auth-wrap {
+    width: min(1000px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 48px;
+    align-items: center;
+}
+
+/* Star */
+.auth-side { display: flex; justify-content: center; }
+
+.mascot-stage {
+    width: min(100%, 330px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+.mascot-bubble {
+    position: relative;
+    max-width: 300px;
+    height: 4em; /* always room for 2 lines, so the star does not jump */
+    display: grid;
+    place-items: center;
+    padding: 12px 18px;
+    border: 2px dashed var(--header-border);
+    border-radius: 22px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.2rem;
+    line-height: 1.25;
+    text-align: center;
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.mascot-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -9px;
+    width: 16px;
+    height: 16px;
+    background: inherit;
+    border-right: 2px dashed var(--header-border);
+    border-bottom: 2px dashed var(--header-border);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.mascot-move { width: min(100%, 300px); } /* gives the star room (its pictures are absolutely placed, so without this the box is 0 wide) */
+
+.mascot-faces {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    animation: mascotFloat 4.5s ease-in-out infinite;
+}
+
+.mascot-faces .face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.3s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+}
+.mascot-faces .face.is-on { opacity: 1; transform: none; }
+
+[data-theme="dark"] .mascot-faces { filter: drop-shadow(0 0 16px rgba(255, 246, 223, 0.22)); }
+
+.mascot-move.bounce { animation: mascotBounce 0.55s ease; }
+.mascot-move.shake  { animation: mascotShake 0.45s ease; }
+
+@keyframes mascotFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+@keyframes mascotBounce {
+    0%, 100% { transform: translateY(0); }
+    35%      { transform: translateY(-18px) scale(1.04); }
+    65%      { transform: translateY(0) scale(0.98); }
+}
+@keyframes mascotShake {
+    0%, 100% { transform: rotate(0); }
+    20%      { transform: rotate(-5deg); }
+    45%      { transform: rotate(4deg); }
+    70%      { transform: rotate(-3deg); }
+}
+
+/* the card: same colours as the cards on the home page */
+.auth-card {
+    position: relative;
+    padding: 34px clamp(22px, 4vw, 40px) 30px;
+    border: 3px dashed var(--header-border);
+    border-radius: 30px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.12);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+[data-theme="dark"] .auth-card { box-shadow: 0 18px 30px rgba(0, 0, 0, 0.35); }
+
+.auth-progress { display: flex; gap: 8px; margin-bottom: 14px; }
+.auth-progress .seg {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    transition: background-color 0.3s ease;
+}
+.auth-progress .seg.done { background-color: var(--hero-btn-hover-bg); }
+.auth-progress .seg.now  { background-color: var(--header-border); }
+
+.auth-step-label {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.auth-title {
+    font-family: var(--font-title);
+    font-size: 2rem;
+    letter-spacing: 1.5px;
+    color: var(--heading);
+}
+
+.step-heading {
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--sub);
+}
+
+.auth-error {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border: 2px dashed #e07a5f;
+    border-radius: 14px;
+    background-color: var(--auth-err-bg);
+    color: var(--auth-err-text);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.1rem;
+}
+
+/* Steps */
+.auth-step {
+    display: grid;
+    gap: 14px;
+    margin-top: 16px;
+    animation: stepIn 0.3s ease both;
+}
+.auth-step.from-right { animation-name: stepInRight; }
+.auth-step.from-left  { animation-name: stepInLeft; }
+
+@keyframes stepIn      { from { opacity: 0; } to { opacity: 1; } }
+@keyframes stepInRight { from { opacity: 0; transform: translateX(28px); }  to { opacity: 1; transform: none; } }
+@keyframes stepInLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row > .form-group { min-width: 0; }
+
+.label-like,
+.auth-card .form-group label {
+    font-family: "Patrick Hand", cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--heading);
+}
+
+.auth-card .form-group { gap: 5px; }
+
+/* the select looks like the text inputs from base.css (date inputs already do) */
+.auth-card select {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.05rem;
+    border: 2px solid var(--header-border);
+    border-radius: 12px;
+    background-color: var(--card-chip-bg);
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+.auth-card select:focus { border-color: #4eb36c; }   /* same green as base.css uses for focused inputs */
+
+.auth-card #userID,
+.auth-card #plate { text-transform: uppercase; }
+
+.hint {
+    color: var(--sub);
+    font-family: "Patrick Hand", cursive;
+    font-size: 0.98rem;
+}
+
+.field-error {
+    margin: 0;
+    color: var(--auth-err);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+.field-error:empty { display: none; }
+
+.has-error > input,
+.has-error > select,
+.has-error .password-field input,
+.has-error .upload-drop { border-color: #e07a5f; }
+
+/* password with an eye button inside (the eye is an SVG, so it follows the text colour in light + dark mode) */
+.password-field { position: relative; }
+.password-field input { padding-right: 52px; }
+.password-field .eye {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--hero-btn-text);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.password-field .eye:hover { background-color: var(--card-accent-bg); }
+.password-field .eye:focus-visible { outline: 3px dashed var(--header-border); outline-offset: 2px; }
+.password-field .eye svg { display: block; }
+
+.password-field .eye .eye-slash { transition: opacity 0.15s ease; }
+.password-field .eye.is-shown .eye-slash { opacity: 0; }     /* password visible = open eye, hidden = eye with a slash */
+
+/* password strength bar: 3 small bars + a word (colours come from the site palette) */
+.strength {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 1.2rem;
+    visibility: hidden; /* empty password: keeps the space, so nothing jumps */
+}
+.strength:not([data-level="0"]) { visibility: visible; }
+.strength-bars { display: flex; flex: 1; gap: 6px; max-width: 160px; }
+.strength-bars i {
+    flex: 1;
+    height: 7px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    transition: background-color 0.25s ease;
+}
+.strength-text {
+    min-width: 5.5em;
+    color: var(--sub);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1rem;
+}
+.strength[data-level="1"] .strength-bars i:nth-child(-n+1) { background-color: var(--auth-err); }
+.strength[data-level="2"] .strength-bars i:nth-child(-n+2) { background-color: var(--header-border); }
+.strength[data-level="3"] .strength-bars i:nth-child(-n+3) { background-color: var(--hero-btn-hover-bg); }
+.strength[data-level="1"] .strength-text { color: var(--auth-err-text); }
+
+/* gender pills */
+.pill-group { display: flex; gap: 10px; }
+.pill { position: relative; flex: 1; }
+.pill input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.pill span {
+    display: block;
+    padding: 9px 12px;
+    border: 2px solid var(--header-border);
+    border-radius: 999px;
+    background-color: var(--card-chip-bg);
+    color: var(--text);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.05rem;
+    text-align: center;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.pill:hover span { transform: translateY(-1px); }
+.pill input:checked + span { background-color: var(--hero-btn-hover-bg); border-color: var(--hero-btn-hover-bg); color: var(--hero-btn-hover-text); }
+.pill input:focus-visible + span { outline: 3px dashed var(--header-border); outline-offset: 3px; }
+
+/* role cards */
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.role-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 8px 12px;
+    border: 3px dashed transparent;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.role-card:hover { transform: translateY(-3px) rotate(-1deg); }
+.role-card input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.role-card img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; pointer-events: none; }
+
+.role-type { 
+    margin-top: -25px;
+    color: var(--sub); 
+    font-family: "Patrick Hand" cursive; 
+    font-size: 1.05rem; 
+    text-align: center; 
+    line-height: 1.2; 
+}
+
+.role-check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+    font-size: 0.9rem;
+    transform: scale(0);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.role-card.is-selected { border-color: var(--header-border); background-color: var(--card-accent-bg); }
+.role-card.is-selected .role-check { transform: scale(1); }
+.role-card:has(input:focus-visible) { outline: 3px dashed var(--header-border); outline-offset: 3px; }
+[data-theme="dark"] .role-card img { filter: brightness(0.92); }
+.role-group.has-error .role-grid { outline: 2px dashed #e07a5f; outline-offset: 6px; border-radius: 24px; }
+
+/* photo upload boxes */
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.upload-box { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.upload-drop {
+    position: relative;
+    display: block;
+    padding: 6px;
+    border: 2px dashed var(--header-border);
+    border-radius: 16px;
+    background-color: var(--card-chip-bg);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.upload-drop:hover { transform: translateY(-2px); border-color: var(--hero-btn-text); }
+.upload-preview { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; display: block; }
+.upload-drop::after {
+    content: "EXAMPLE";
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+}
+.upload-box.has-file .upload-drop::after { display: none; }
+.upload-box.has-file .upload-preview { object-fit: cover; }
+.upload-cta {
+    display: block;
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--hero-btn-text);
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.upload-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.upload-box:has(.upload-input:focus-visible) .upload-drop { outline: 3px dashed var(--header-border); outline-offset: 3px; }
+
+.auth-note {
+    padding: 10px 14px;
+    border: 2px dashed var(--header-border);
+    border-radius: 14px;
+    background-color: var(--card-accent-bg);
+    color: var(--text);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.05rem;
+}
+
+/* Button */
+.auth-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+.auth-actions .hero-btn { min-width: 110px; }
+.auth-actions #nextBtn { margin-left: auto; }
+.hero-btn.is-primary {
+    background-color: var(--hero-btn-hover-bg);
+    border-color: var(--hero-btn-hover-bg);
+    color: var(--hero-btn-hover-text);
+    box-shadow: 0 4px 0 var(--hero-btn-hover-shadow);
+}
+.hero-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+/* Under the card */
+.auth-switch {
+    width: min(1000px, 100%);
+    text-indent: calc(42.5% + 27.6px);
+    color: var(--sub);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.2rem;
+    text-align: center;
+}
+.auth-switch a {
+    color: var(--hero-btn-text);
+    font-weight: 800;
+    text-decoration: none;
+    text-underline-offset: 4px;
+}
+.auth-switch a:hover { color: var(--heading); }
+
+.auth-footer {
+    padding: 16px 20px;
+    border-top: 2px dashed var(--header-border);
+    background-color: var(--header-bg);
+    color: var(--sub);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.05rem;
+    text-align: center;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Small Screen */
+@media (max-width: 860px) {
+    .auth-main { padding-top: 32px; }
+    .auth-wrap { grid-template-columns: 1fr; gap: 28px; }
+    .mascot-stage { flex-direction: column-reverse; gap: 22px; width: 100%; }
+    .mascot-move { width: 210px; margin-bottom: -20px; }
+    .mascot-bubble { max-width: 340px; }
+    .mascot-bubble::after { bottom: auto; top: -9px; border: 0; border-left: 2px dashed var(--header-border); border-top: 2px dashed var(--header-border); }
+    .auth-switch { text-indent: 0; }
+}
+
+@media (max-width: 520px) {
+    .form-row,
+    .upload-grid { grid-template-columns: 1fr; }
+    .auth-title { font-size: 1.7rem; }
+    .auth-actions .hero-btn { min-width: 0; padding: 12px 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mascot-faces,
+    .mascot-move.bounce,
+    .mascot-move.shake,
+    .auth-step { animation: none; }
+    .mascot-faces .face,
+    .role-card,
+    .role-check { transition: none; }
+}
+
+/* desktop: card has a fixed height, only the middle part scrolls */
+@media (min-width: 861px) {
+    .auth-card {
+        /* 240px = header + footer + paddings + "Already have an account?" line */
+        height: clamp(520px, calc(100svh - 240px), 780px);
+        display: flex;
+        flex-direction: column;
+    }
+    .auth-card > * { flex-shrink: 0; }
+    .auth-step-label { align-self: flex-start; }
+
+    .auth-card > form {
+        flex: 1 1 auto;
+        min-height: 0; /* lets the step area shrink and scroll */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .auth-step {
+        flex: 1 1 auto;
+        min-height: 0;
+        align-content: start;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin: 8px -10px 0; /* the padding keeps focus outlines from being cut off */
+        padding: 8px 10px 10px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--header-border) transparent;
+    }
+
+    .auth-actions { flex-shrink: 0; margin-top: 16px; }
+}

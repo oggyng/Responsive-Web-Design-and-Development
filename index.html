@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        (function () {
+            var theme = null;
+            try { theme = localStorage.getItem('theme'); } catch (e) {}
+            if (!theme) {
+                theme = 'light';
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/home.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Edu+TAS+Beginner:wght@400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
+
+    <title>CPU - Carpooling University</title>
+</head>
+<body>
+    
+    <div class="intro">
+
+        <button class="skip-btn" id="skipBtn" type="button">Skip</button>
+
+        <div class="bubbles" aria-hidden="true">
+            <div class="bubble in"  style="top:14%; left:5%;  max-width:200px;">Anyone heading to APU at 1pm?</div>
+            <div class="bubble out" style="top:22%; right:5%;">I have 2 seats</div>
+            <div class="bubble in"  style="top:42%; left:3%;">Can I join from Sri Petaling?</div>
+            <div class="bubble out" style="top:52%; right:3%;">Sure! Pick-up at 12:40</div>
+            <div class="bubble in hide-mobile"  style="top:68%; left:4%;">Thanks, see you tomorrow!</div>
+            <div class="bubble out hide-mobile" style="top:76%; right:4%;">We saved 0.6kg CO₂ today~</div>
+        </div>
+
+        <img src="assets/logo.png" alt="CPU logo" class="intro-logo">
+        
+        <h1 class="logo-header">
+            <span class="logo">C</span><span class="logo">P</span><span class="logo">U</span>
+        </h1>
+
+        <div class="planet-scene">
+            <img src="assets/planet.png" alt="Planet" class="planet-img">
+
+            <div class="car-slot" style="--x:18%; --y:67%; --w:35.2%; --by:72%;   --rot:-54deg;">
+                <img src="assets/car1.png" alt="" class="car">
+            </div>
+            <div class="car-slot" style="--x:30%; --y:30%; --w:24.7%; --by:70%; --rot:-15deg;">
+                <img src="assets/car2.png" alt="" class="car">
+            </div>
+            <div class="car-slot" style="--x:52%; --y:18%;   --w:23.1%; --by:75%; --rot:0deg;">
+                <img src="assets/car3.png" alt="" class="car">
+            </div>
+            <div class="car-slot" style="--x:70%; --y:30%; --w:30%; --by:89%;   --rot:27deg;">
+                <img src="assets/car4.png" alt="" class="car">
+            </div>
+            <div class="car-slot" style="--x:83%; --y:55%; --w:28%;   --by:90.7%; --rot:55deg;">
+                <img src="assets/car5.png" alt="" class="car">
+            </div>
+
+        </div>
+
+    </div>
+
+    <header class="main-header">
+        <div class="logo-container">    
+            <img src="assets/logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4>
+        </div>
+
+        <nav class="header-center" id="navMenu">    
+            <a href="#top" class="nav-item active">Home</a>
+            <a href="#how" class="nav-item">How It Works</a>
+            <a href="#why" class="nav-item">Why CPU</a>
+            <a href="#impact" class="nav-item">Eco Impact</a>
+            <a href="#about" class="nav-item">About</a>
+            <a href="#team" class="nav-item">Team</a>        
+        </nav>
+
+        <div class="header-right">
+            <a href="signup.php" class="nav-btn">Join Now</a>
+        </div>
+
+        <button class="pull-switch" id="themeToggle" type="button"
+                aria-label="Switch light or dark mode" aria-pressed="false"
+                title="Pull to switch theme">
+            <span class="cord"></span>
+            <span class="mascot">
+                <img class="mascot-light" src="assets/mascot-light.png" alt="">
+                <img class="mascot-dark" src="assets/mascot-dark.png" alt="">
+            </span>
+        </button>
+        
+    </header>
+
+    <main>
+        <section class="hero-section">
+
+            <div class="curved-title-box">
+                <svg class="curved-text-svg" viewBox="0 0 500 80">
+                    <path id="curvePath" d="M 50 70 Q 250 10 450 70" fill="transparent" />
+                    <text>
+                        <textPath href="#curvePath" startOffset="50%" text-anchor="middle">
+                            shared rides • greener tomorrows
+                        </textPath>
+                    </text>
+                </svg>
+
+                <a href="#how" class="clover-link" aria-label="See how it works">
+                    <img src="assets/four-leaf clover.png" alt="" class="doodle-clover">
+                </a>
+
+            </div>
+
+            <h1 class="hero-main-title" id="heroTitle" aria-label="Carpooling University">
+                Carpooling University
+            </h1>
+
+            <p class="hero-subtitle">Made for smart, green & friendly student commuters.</p>
+
+            <div class="hero-buttons">
+                <a href="#find" class="hero-btn">
+                    Find a Ride <span class="btn-arrow">&rarr;</span>
+                </a>
+                <a href="#offer" class="hero-btn">
+                    Offer a Seat <span class="btn-arrow">&rarr;</span>
+                </a>
+            </div>
+
+            <div class="hero-strip" aria-hidden="true">
+                <img src="assets/car-light.png" alt="" class="hero-car">
+                <img src="assets/star.png" alt="" class="hero-star">
+            </div>
+        </section>
+
+        <section class="how-section" id="how">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Five easy stops to your next ride.</p>
+
+            <div class="book-wrap" id="howBookWrap">
+                <div class="book" id="howBook" tabindex="0" role="group"
+                     aria-label="How it works. Use the left and right arrow keys to flip the pages."></div>
+            </div>
+ 
+            <div class="book-controls">
+                <button type="button" class="book-arrow" id="bookPrev" aria-label="Previous step">&larr;</button>
+                <div class="book-dots" id="bookDots"></div>
+                <button type="button" class="book-arrow" id="bookNext" aria-label="Next step">&rarr;</button>
+            </div>
+            <p class="book-status" id="bookStatus" aria-live="polite"></p>
+ 
+            <ol class="how-steps" id="howSteps">
+ 
+                <li class="how-step" data-art="assets/how-01.png">
+                    <span class="stop-label">STEP 01 / 05</span>
+                    <h3>Join CPU</h3>
+                    <p>Sign up with your student ID. For drivers, you'll also need to add your car details and wait for admin approval.</p>
+                </li>
+
+                <li class="how-step" data-art="assets/how-02.png">
+                    <span class="stop-label">STEP 02 / 05</span>
+                    <h3>Browse trips</h3>
+                    <p>Choose the week, day, direction, pickup station and time, then hit Search.</p>
+                </li>
+ 
+                <li class="how-step" data-art="assets/how-03.png">
+                    <span class="stop-label">STEP 03 / 05</span>
+                    <h3>Choose a ride</h3>
+                    <p>See each driver's car, seats left, fee and CO₂ saved. Sort by Recommended, Lowest fee or Highest rating.</p>
+                </li>
+ 
+                <li class="how-step" data-art="assets/how-04.png">
+                    <span class="stop-label">STEP 04 / 05</span>
+                    <h3>Request & ride</h3>
+                    <p>Requests open every Saturday and Sunday for next week. See the fee first, and get a notification once your driver accepts.</p>
+                </li>
+ 
+                <li class="how-step" data-art="assets/how-05.png">
+                    <span class="stop-label">STEP 05 / 05</span>
+                    <h3>Save CO₂, level up</h3>
+                    <p>Rate each other after the ride. Every trip adds to your CO₂ saved, earns badges and moves you up the leaderboard.</p>
+                </li>
+ 
+            </ol>
+        </section>
+
+        <section class="why-section" id="why">
+            <div class="why-sticky">
+                <div class="why-head">
+                    <span class="why-count" id="whyCount">01 / 06</span>
+                    <h2 class="section-title">Why CPU?</h2>
+                    <p class="section-subtitle">Everything students need for a ride, in one place.</p>
+                </div>
+
+                <div class="why-track">
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-01.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> Student ID verified</span>
+                        </div>
+                        <span class="stop-label">REASON 01 / 06</span>
+                        <h3>Students Only</h3>
+                        <p>Only APU students can join, so you always ride with people from your own campus.</p>
+                    </article>
+
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-02.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> Driver approved</span>
+                        </div>
+                        <span class="stop-label">REASON 02 / 06</span>
+                        <h3>Verified Drivers</h3>
+                        <p>Every driver is checked and approved by an admin before they can offer a seat.</p>
+                    </article>
+
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-03.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> Suggested RM X.XX</span>
+                        </div>
+                        <span class="stop-label">REASON 03 / 06</span>
+                        <h3>Fair Price, No Surprise</h3>
+                        <p>We suggest the price per seat from the station distance. Drivers can only adjust it a little (±20%).</p>
+                    </article>
+
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-04.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> No login needed</span>
+                        </div>
+                        <span class="stop-label">REASON 04 / 06</span>
+                        <h3>Browse Before You Join</h3>
+                        <p>Look at the rides first. You only log in when you want to request a seat.</p>
+                    </article>
+
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-05.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> Request accepted</span>
+                        </div>
+                        <span class="stop-label">REASON 05 / 06</span>
+                        <h3>Safe & Simple Contact</h3>
+                        <p>Send a short note. When the driver accepts, WhatsApp is shown. No random chatting.</p>
+                    </article>
+
+                    <article class="why-card">
+                        <div class="why-art">
+                            <img src="assets/why-06.png" alt="">
+                            <span class="why-float"><b>&#10003;</b> Next week's rides</span>
+                        </div>
+                        <span class="stop-label">REASON 06 / 06</span>
+                        <h3>Plan Ahead</h3>
+                        <p>Book next week's rides in advance, so you can plan your classes and your week.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="impact-section" id="impact">
+            <div class="impact-head">
+                <h2 class="section-title">Eco Impact</h2>
+                <p class="section-subtitle">Watch our campus green footprint grow with every shared ride!</p>
+            </div>
+
+            <div class="eco-container">
+
+                <div class="eco-left-preview">
+                    <img id="plantImage" src="assets/sapling-01.png" alt="Plant Stage" class="plant-stage-img">
+                    <div class="plant-badge" id="plantBadge">Stage 01: Seed</div>
+                </div>
+
+                <div class="card eco-right-accordion" id="ecoAccordion">
+
+                    <!-- Stage 1 -->
+                    <div class="eco-panel active" data-stage="1" data-img="assets/sapling-01.png" data-title="Stage 01: Seed">
+                        <span class="eco-title">Seed of Change</span>
+                        <div class="eco-content">
+                            <span class="eco-tag">1 ride</span>
+                            <p>Every big change starts with one shared ride.</p>
+                            <ul>
+                                <li>One car carries many students</li>
+                                <li>See the CO₂ you saved after every trip</li>
+                                <li>Earn your very first badge</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="eco-panel" data-stage="2" data-img="assets/sapling-02.png" data-title="Stage 02: Sprout">
+                        <span class="eco-title">Sprouting Roots</span>
+                        <div class="eco-content">
+                            <span class="eco-tag">1 month</span>
+                            <p>Book next week's rides and make it a routine.</p>
+                            <ul>
+                                <li>Plan ahead, ride together every week</li>
+                                <li>Your CO₂ savings keep adding up</li>
+                                <li>Regular routes and friendly co-riders</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="eco-panel" data-stage="3" data-img="assets/sapling-03.png" data-title="Stage 03: Growing">
+                        <span class="eco-title">Branching Out</span>
+                        <div class="eco-content">
+                            <span class="eco-tag">100 riders</span>
+                            <p>More drivers, more routes, more students joining in.</p>
+                            <ul>
+                                <li>New routes reach more neighbourhoods</li>
+                                <li>Leaderboard and challenges keep it fun</li>
+                                <li>Fewer empty seats on every trip</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Stage 4 -->
+                    <div class="eco-panel" data-stage="4" data-img="assets/sapling-04.png" data-title="Stage 04: Full Bloom">
+                        <span class="eco-title">Full Bloom</span>
+                        <div class="eco-content">
+                            <span class="eco-tag">Whole campus</span>
+                            <p>A greener APU, built one ride at a time.</p>
+                            <ul>
+                                <li>Less traffic and parking pressure around campus</li>
+                                <li>Everyone's savings add up to real numbers</li>
+                                <li>Carpooling becomes the APU way to commute</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <section class="about-section" id="about">
+            <h2 class="section-title">About Us</h2>
+
+            <!-- What is CPU? -->
+            <div class="about-block" id="about-cpu">
+                <h3 class="about-block-title">What is CPU?</h3>
+                <p class="section-subtitle">Tap a question and the star will answer!</p>
+
+                <div class="about-talk" id="aboutTalk" role="region" aria-label="Chat with the CPU star">
+                    <div class="talk-star" id="talkStar" aria-hidden="true">
+                        <img src="assets/lightbulb.png" alt="" class="talk-bulb" id="talkBulb">
+                        <div class="talk-star-body">
+                            <img src="assets/sign-close-mouth.png" alt="" class="star-face face-closed">
+                            <img src="assets/sign-open-mouth.png" alt="" class="star-face face-open">
+                        </div>
+                    </div>
+
+                    <div class="talk-side">
+                        <div class="talk-bubble" id="talkBubble" hidden>
+                            <p class="talk-text" id="talkText" aria-hidden="true"></p>
+                            <button type="button" class="talk-next" id="talkNext" aria-label="Next" hidden>&#9662;</button>
+                        </div>
+
+                        <div class="talk-menu" id="talkMenu" role="group" aria-label="Ask the star" hidden>
+                            <button type="button" class="talk-option" data-q="what">What is CPU?</button>
+                            <button type="button" class="talk-option" data-q="how">How does it work?</button>
+                            <button type="button" class="talk-option" data-q="get">What do I get?</button>
+                        </div>
+                    </div>
+
+                    <!-- screen readers hear each full line here (the typed text above is hidden from them) -->
+                    <p class="sr-only" id="talkLive" aria-live="polite"></p>
+
+                    <noscript>
+                        <p class="talk-noscript">
+                            CPU is a carpooling web app made only for APU students. Drivers share their empty seats,
+                            and passengers book rides for next week. The system suggests a fair fee from the station distance,
+                            shows how much CO₂ each ride saves, and rewards students with badges and a leaderboard.
+                        </p>
+                    </noscript>
+                </div>
+            </div>
+
+            <!-- Who uses CPU? -->
+            <div class="about-block" id="about-roles">
+                <h3 class="about-block-title">Who uses CPU?</h3>
+                <p class="section-subtitle">Pull the arrow to open the pack and meet the 4 roles!</p>
+
+                <div class="roles-pack-wrapper">
+
+                    <!-- Role Pack -->
+                    <div class="role-pack" id="rolePack">
+                        <button type="button" class="pack-pull" aria-label="Pull to open the pack">
+                            <span class="pack-pull-arrow">&rarr;</span>
+                            <span class="pack-pull-text">PULL TO OPEN</span>
+                        </button>
+                    
+                        <img src="assets/pack-front.png" alt="CPU Role Pack" class="pack-img-full" id="packFull">
+                        <img src="assets/pack-body.png" alt="Pack Body" class="pack-img-body" id="packBody">
+                        <img src="assets/pack-rip-top.png" alt="Rip Top" class="pack-img-rip-top" id="packRipTop">
+                        <img src="assets/pack-rip-top.png" alt="" aria-hidden="true" class="pack-img-rip-torn">
+
+                    </div>
+
+                    <!-- Roles Cards Grid -->
+                    <div class="roles-cards-grid" id="rolesCardsGrid">
+                    
+                        <!-- TOP: Driver -->
+                        <div class="role-card pos-top" data-role="driver">
+                            <div class="role-card-inner">
+                                <div class="role-card-front">
+                                    <img src="assets/card-driver.png" alt="Driver" class="role-img">
+                                </div>
+                                <div class="role-card-back" style="background-image: url('assets/card-back.png');">
+                                    <div class="card-info-content">
+                                        <h4>Driver</h4>
+                                        <p class="role-desc">Share your route and empty seats. Accept or reject ride requests for upcoming weeks.</p>
+                                        <ul class="role-features">
+                                            <li>Offer seats & timetable</li>
+                                            <li>Manage ride requests</li>
+                                            <li>Fair distance fee</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Passenger -->
+                        <div class="role-card pos-left" data-role="passenger">
+                            <div class="role-card-inner">
+                                <div class="role-card-front">
+                                    <img src="assets/card-passenger.png" alt="Passenger" class="role-img">
+                                </div>
+                                <div class="role-card-back" style="background-image: url('assets/card-back.png');">
+                                    <div class="card-info-content">
+                                        <h4>Passenger</h4>
+                                        <p class="role-desc">Find convenient rides to APU campus and book your seat in advance.</p>
+                                        <ul class="role-features">
+                                            <li>Browse station schedules</li>
+                                            <li>Request weekly rides</li>
+                                            <li>Track CO₂ savings</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin -->
+                        <div class="role-card pos-right" data-role="admin">
+                            <div class="role-card-inner">
+                                <div class="role-card-front">
+                                    <img src="assets/card-admin.png" alt="Admin" class="role-img">
+                                </div>
+                                <div class="role-card-back" style="background-image: url('assets/card-back.png');">
+                                    <div class="card-info-content">
+                                        <h4>Admin</h4>
+                                        <p class="role-desc">Keep the community safe by verifying driver credentials and managing stations.</p>
+                                        <ul class="role-features">
+                                            <li>Verify APU student IDs</li>
+                                            <li>Handle safety reports</li>
+                                            <li>Manage pickup stations</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytic -->
+                        <div class="role-card pos-bottom" data-role="analytic">
+                            <div class="role-card-inner">
+                                <div class="role-card-front">
+                                    <img src="assets/card-analytic.png" alt="Analytic" class="role-img">
+                                </div>
+                                <div class="role-card-back" style="background-image: url('assets/card-back.png');">
+                                    <div class="card-info-content">
+                                        <h4>Analytic</h4>
+                                        <p class="role-desc">Drive eco-impact awareness with sustainability reports and challenges.</p>
+                                        <ul class="role-features">
+                                            <li>Track CO₂ reduction metrics</li>
+                                            <li>Design eco-badges</li>
+                                            <li>Generate platform analytics</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="role-modal-backdrop" id="roleBackdrop"></div>
+
+            </div>
+        </section>
+
+        <section class="team-section" id="team">
+            <h2 class="section-title">Team</h2>
+            <p class="section-subtitle">Meet our team through our favorite music! Click a record to explore who we are.</p>
+
+                <div class="team-container">
+                    <!-- left-record-player -->
+                    <div class="record-player-container">
+                        <img src="assets/player1.png" alt="Record Player" class="record-player-img">
+                        <video src="assets/turntable-spin.webm" class="turntable-video" id="turntableVideo" muted loop playspreload></video>
+                        <div class="notes-container" id="notesContainer"></div>
+                    </div>
+
+                    <div class="members-grid">
+
+                        <!-- pq -->
+                        <div class="album-card" data-member="pq.html" data-audio="audio-pq">
+                            <div class="vinyl-record">
+                                <img src="assets/vinyl-pq.png" alt="pq's Vinyl">
+                            </div>
+                            <div class="album-cover">
+                                <img src="assets/cover-pq.jpg" alt="pq's Album Cover">
+                                <div class="member-name">Pei Qi</div>
+                            </div>
+                            <audio id="audio-pq" src="assets/music/pq-fav.mp4" preload="none" loop></audio>
+                        </div>
+
+                        <!-- zh -->
+                        <div class="album-card" data-member="zh.html" data-audio="audio-zh">
+                            <div class="vinyl-record">
+                                <img src="assets/vinyl-zh.png" alt="zh's Vinyl">
+                            </div>
+                            <div class="album-cover">
+                                <img src="assets/cover-zh.jpg" alt="zh's Album Cover">
+                                <div class="member-name">Zhuo Hua</div>
+                            </div>
+                            <audio id="audio-zh" src="assets/music/zh-fav.mp4" preload="none" loop></audio>
+                        </div>
+
+                        <!-- ws -->
+                        <div class="album-card" data-member="ws\intro.php" data-audio="audio-ws">
+                            <div class="vinyl-record">
+                                <img src="assets/vinyl-ws.png" alt="ws's Vinyl">
+                            </div>
+                            <div class="album-cover">
+                                <img src="assets/cover-ws.jpg" alt="ws's Album Cover">
+                                <div class="member-name">Wai San</div>
+                            </div>
+                            <audio id="audio-ws" src="assets/music/ws-fav.mp4" preload="none" loop></audio>
+                        </div>
+
+                        <!-- jh -->
+                        <div class="album-card" data-member="jh/profile.html" data-audio="audio-jh">
+                            <div class="vinyl-record">
+                                <img src="assets/vinyl-jh.png" alt="jh's Vinyl">
+                            </div>
+                            <div class="album-cover">
+                                <img src="assets/cover-jh.jpg" alt="jh's Album Cover">
+                                <div class="member-name">Jinhan</div>
+                            </div>
+                            <audio id="audio-jh" src="assets/music/jh-fav.mp4" preload="none" loop></audio>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Logo + Description -->
+            <div class="footer-brand">
+                <div class="logo-container">
+                    <img src="assets/logo.png" alt="CPU logo" class="nav-logo">
+                    <h4>CPU.</h4>
+                </div>
+                <p class="footer-tagline">Carpooling University — Shared rides, greener tomorrows for APU students.</p>
+            </div>
+
+            <!-- Explore -->
+            <div class="footer-column">
+                <span class="footer-heading">
+                    Explore<span class="icon-wrapper explore-wrapper"><img src="assets/icon-explore.png" class="footer-icon" alt=""></span>
+                </span>
+                <a href="#top">Home</a>
+                <a href="#how">How It Works</a>
+                <a href="#why">Why CPU</a>
+                <a href="#impact">Eco Impact</a>
+                <a href="#about">About Us</a>
+                <a href="#team">Team</a>
+            </div>
+
+            <!-- Ride (Login) -->
+            <div class="footer-column">
+                <span class="footer-heading">
+                    Ride<span class="icon-wrapper ride-wrapper"><img src="assets/icon-ride.png" class="footer-icon" alt=""></span>
+                </span>
+                <a href="#find">Find a Ride</a>
+                <a href="#offer">Offer a Seat</a>
+                <a href="#join">Join Now</a>
+            </div>
+
+            <!-- Help & Legal -->
+            <div class="footer-column">
+                <span class="footer-heading">
+                    Help & Legal 
+                    <span class="icon-wrapper">
+                        <img src="assets/icon-help-dark.png" class="footer-icon icon-light-mode" alt="">
+                        <img src="assets/icon-help-light.png" class="footer-icon icon-dark-mode" alt="">
+                    </span>
+                </span>
+                <a href="#safety">Safety Tips</a>
+                <a href="#contact">Contact Us</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#privacy">Privacy Policy</a>
+            </div>
+        </div>
+
+        <img src="assets/dog-car.png" alt="" class="footer-dog-left">
+        <img src="assets/dog-phone.png" alt="" class="footer-dog-right">
+
+        <div class="footer-bottom">
+            <p>© 2026 CPU - Carpooling University</p>
+        </div>
+    </footer>
+
+    <div class="contact-modal-overlay" id="contactModal" aria-hidden="true">
+        <div class="contact-modal-card">
+            <button class="modal-close-btn" id="closeContactModal" aria-label="Close modal">&times;</button>
+
+            <div class="modal-header-content" id="modalHeaderContent">
+                <img src="assets/dog-phone.png" alt="Calling Dog" class="modal-dog-img">
+                <h3>Get in Touch!</h3>
+                <p>Have questions or feedback about CPU? Send us a message!</p>
+            </div>
+
+            <form id="contactForm" action="process-contact.php" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="contactName">Name</label>
+                    <input type="text" id="contactName" name="name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentId">Student ID / TP Number</label>
+                    <input type="text" id="studentId" name="student_id" placeholder="e.g. TP012345" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Message</label>
+                    <textarea id="contactMessage" name="message" rows="4" placeholder="Type your message here..." required></textarea>
+                </div>
+                
+                <button type="submit" class="hero-btn submit-btn">
+                    Send Message <span class="btn-arrow">&rarr;</span>
+                </button>
+            </form>
+
+            <div class="contact-success-msg" id="contactSuccessMsg" style="display: none;">
+                <img src="assets/icon-envelope.png" alt="Envelope" class="success-envelope-img">
+                <h4>Message Sent!</h4>
+                <p>Thanks for reaching out! Our team will get back to you soon.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

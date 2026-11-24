@@ -1,22 +1,15 @@
 <?php
-    session_start();
-    $_SESSION["userID"] = "TP000001";
+// test page
+$requiredRole = 'Driver';
+$pageTitle    = 'Dashboard';
+$activePage   = 'dashboard';
+$unreadCount  = 3;                 // test only. Later: count from the database
+
+include '../includes/head.php';
+include '../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Awesome 5 font -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Pie chart -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <title>Document</title>
-</head>
-<body>
-    <?php include('driverHeader.html'); ?> 
+    <main>
     <div class="pageContainer">
         <h1>Dashboard</h1>
         <div class="contentContainer">
@@ -35,7 +28,7 @@
         <div class="contentContainer">
             <h2>Upcoming rides</h2>
             <?php
-                include("database.php");
+                include("../dbconn.php");
 
                 $queryRide = "SELECT r.rideID, r.departureDate, r.arrivalLeavingTime, r.direction, s.stationName, COUNT(b.bookingID) AS bookedSeats, d.maxSeat,
                                 TIMESTAMPDIFF(MINUTE, NOW(), TIMESTAMP(r.departureDate, r.arrivalLeavingTime)) AS minutesUntil
@@ -156,10 +149,7 @@
             ?>
         </div>
     </div>
+</main>
 
-</body>
-</html>
 
-<?php 
-    mysqli_close($conn);
-?>
+<?php include '../includes/footer.php'; ?>

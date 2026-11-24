@@ -1,23 +1,20 @@
 <?php
     session_start();
+    // test page
+    $requiredRole = 'Driver';
+    $pageTitle    = 'My rides';
+    $activePage   = 'rides';
+    $unreadCount  = 3;                 // test only. Later: count from the database
+
+    include '../includes/head.php';
+    include '../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Awesome 5 font -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <title>Document</title>
-</head>
-<body>
-    <?php include('driverHeader.html'); ?> 
+<main>
     <div class="pageContainer">      
         <h1>My Rides</h1>
         <div class="contentContainer">
-            <form action="driverRide.php" method="post">
+            <form action="" method="post">
                 <h2>Add ride slot</h2>
                 <label class="inputLabel" for="selectDay">Select Day</label>
                 <br>
@@ -77,7 +74,7 @@
             <h2>Rides</h2>
             <div class="boxContainer">
                 <?php
-                    include('database.php');
+                    include('../dbconn.php');
 
                     $nextMonday = date_create('next monday');
                     if(date('w')==0){
@@ -114,5 +111,5 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+</main>
+<?php include '../includes/footer.php'; ?>

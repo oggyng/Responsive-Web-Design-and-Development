@@ -1,0 +1,86 @@
+/* =====================================================================
+   login.css  -  only the extra bits for login.php
+   needs base.css and auth.css loaded first
+   ===================================================================== */
+
+/* ---------- the card hugs its content (one field = a small card) ---------- */
+.login-card.auth-card { min-height: 0; }
+
+@media (min-width: 861px) {
+    /* both steps share this height, so the card does not jump when you go to step 2
+       (if it still jumps, raise 420px to 460px or 480px) */
+    .login-card.auth-card { height: auto; min-height: 420px; }
+}
+
+/* narrower card, so the star and the card sit closer together */
+.auth-wrap:has(.login-card) {
+    width: min(880px, 100%);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+    gap: 40px;
+}
+@media (max-width: 860px) {
+    .auth-wrap:has(.login-card) { grid-template-columns: 1fr; gap: 28px; }
+}
+
+/* "New here? Sign up" sits right under the card (the card is 460px wide and on the right) */
+@media (min-width: 861px) {
+    .auth-main:has(.login-card) .auth-switch {
+        width: min(880px, 100%);            /* same width as .auth-wrap */
+        text-indent: calc(100% - 460px);    /* start at the card's left edge, so the text is centred under the card */
+    }
+}
+
+/* "Signing in as TP012345" */
+.id-chip {
+    justify-self: start;
+    padding: 2px 12px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+}
+.id-chip:empty { display: none; }
+
+/* ---------- the star while it eats ---------- */
+.mascot-move { transform-origin: 50% 88%; }               /* squash and stretch from its feet */
+
+/* the eating pictures swap instantly (no fade), and are about 5% smaller than sign-normal, so make them a little bigger */
+.mascot-faces { --sign-scale: 1.05; }
+.mascot-faces.snap .face { transition: none; }
+.mascot-faces .face[data-mood="openmouth"],
+.mascot-faces .face[data-mood="chewing"],
+.mascot-faces .face[data-mood="yummy"],
+.mascot-faces .face[data-mood="wrong"] { scale: var(--sign-scale); }
+
+/* while the star is eating, the real text in the box is hidden (the flying letters are copies)
+   login.js also empties the box itself, so this is only a backup */
+.is-eating {
+    color: transparent !important;
+    caret-color: transparent;
+}
+
+/* the little letters that fly into the star's mouth (login.js adds them to <body>) */
+.fly-letter {
+    position: fixed;
+    z-index: 50;
+    pointer-events: none;
+    color: var(--heading);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: pre;
+    transform: translate(0, -50%);
+    will-change: transform, opacity;
+}
+
+@media (min-width: 861px) {
+    .auth-wrap:has(.login-card) .mascot-move { margin-top: -60px; }   /* bigger number = closer */
+}
+
+@media (min-width: 861px) {
+    .auth-wrap:has(.login-card) .mascot-stage { width: min(100%, 380px); }
+    .auth-wrap:has(.login-card) .mascot-move  { width: min(100%, 340px); }   /* was 300px; try 360px for even bigger */
+}

@@ -1,24 +1,21 @@
 <?php
     session_start();
+    // test page
+    $requiredRole = 'Driver';
+    $pageTitle    = 'Requests';
+    $activePage   = 'requests';
+    $unreadCount  = 3;                 // test only. Later: count from the database
+
+    include '../includes/head.php';
+    include '../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Awesome 5 font -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <title>Document</title>
-</head>
-<body>
-    <?php include('driverHeader.html'); ?> 
+<main>
     <div class="pageContainer">    
         <h1>Requests</h1>
         <div class="contentContainer">
             <?php 
-                include('database.php');
+                include('../dbconn.php');
 
                 $query = "
                     SELECT * FROM booking b 
@@ -64,5 +61,5 @@
             <!-- <img src='uploads/{$row['profilePicturePath']}' style='border:3px solid black; width:40px; height:40px; border-radius:50%'> -->
         </div>
     </div>
-</body>
-</html>
+</main>
+<?php include '../includes/footer.php'; ?>

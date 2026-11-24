@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>role.css preview</title>
+<style>
+  /* This page's own look (plain, so it doesn't compete with the components) */
+  body { margin: 0; padding: 24px; font: 14px/1.5 Arial, sans-serif; background: #f4f4f4; color: #222; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .intro { margin: 0 0 8px; color: #555; max-width: 1000px; }
+  .intro li { margin: 2px 0; }
+  .toc { margin: 0 0 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .toc a { padding: 3px 10px; border: 1px solid #bbb; border-radius: 999px; background: #fff; color: #222; text-decoration: none; font-size: 13px; }
+  .toc a:hover { background: #e8e8e8; }
+  .scroll { overflow-x: auto; background: #fff; border: 1px solid #ccc; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; text-align: left; }
+  th { background: #e8e8e8; position: sticky; top: 0; z-index: 1; }
+  td.name { width: 210px; min-width: 210px; font-family: Consolas, monospace; font-size: 13px; }
+  td.name small { display: block; margin-top: 4px; font-family: Arial, sans-serif; color: #666; }
+  tr.group td { background: #dcdcdc; font-weight: 700; font-size: 15px; scroll-margin-top: 40px; }
+  /* each output cell is a window of a fake screen: desktop = 1280px wide, mobile = 390px wide.
+     desktop cells show the left 380px; scroll sideways inside the cell to see the rest */
+  .clip { overflow: hidden; }
+  .clip.desktop { width: 380px; overflow-x: auto; }
+  .clip.mobile { width: 390px; }
+  .clip iframe { display: block; border: 0; height: 80px; background: #fff; }
+  .clip.desktop iframe { width: 1280px; }
+  .clip.mobile iframe { width: 390px; }
+</style>
+</head>
+<body>
+
+<h1>role.css preview</h1>
+<div class="intro">
+  <p style="margin:0 0 4px">Every class from <code>style/base.css + style/role.css</code>, shown at real size (1:1).</p>
+  <ul style="margin:0;padding-left:20px">
+    <li>Desktop cells are a 1280px-wide screen (you see the left 380px, scroll sideways inside the cell for the rest). Mobile cells are a 390px screen. So the media queries work like on a real device.</li>
+    <li>Rows named <code>:hover</code>, <code>:active</code> or <code>:focus</code> show that state frozen. Every other row still reacts when you hover it.</li>
+    <li>Animations and transitions are switched off, so each state shows its end look.</li>
+    <li>Open this page through XAMPP (<code>http://localhost/RWDD/Learn/style-preview/...</code>) so the pictures load and the cell heights fit.</li>
+  </ul>
+</div>
+<div class="toc" id="toc"></div>
+
+<div class="scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Class name</th>
+      <th>Light mode · desktop</th>
+      <th>Dark mode · desktop</th>
+      <th>Light mode · mobile</th>
+      <th>Dark mode · mobile</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// Settings for this page
+// ---------------------------------------------------------------------
+const CSS_FILES  = ["../style/base.css","../style/role.css"];      // paths are relative to THIS html file
+const BODY_CLASS = 'role-page role-driver';   // class the real page puts on <body>
+const BODY_BG = 'var(--section-bg)';      // background the real page has
+const A = '../assets/';
+const AUTO_MID = false;        // true = every part is centred like on the real page (home)               // pictures folder
+
+const FONTS = 'https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@700&family=Patrick+Hand&family=DynaPuff:wght@400..700&display=swap';
+
+// ---------------------------------------------------------------------
+// helpers used by the rows
+// ---------------------------------------------------------------------
+// colour square + its name + the value it has in this theme
+function swatch(v) {
+  const isVar = v.startsWith('--');
+  const bg = isVar ? `var(${v})` : v;
+  return `<div style="display:flex;align-items:center;gap:10px;font:12px Consolas,monospace;color:var(--text,#222)">
+            <div style="width:48px;height:48px;flex:none;border:1px solid #888;background:${bg}"></div>
+            <span>${v}<br><b class="sw-val" data-var="${isVar ? v : ''}">${isVar ? '' : v}</b></span>
+          </div>`;
+}
+// font sample
+function fontRow(family, text) {
+  return `<div style="font-family:${family};font-size:1.6rem;color:var(--heading)">${text}</div>
+          <div style="font:12px Consolas,monospace;color:var(--sub);margin-top:4px">${family.replace(/"/g, '&quot;')}</div>`;
+}
+
+const TROPHY = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2"/><path d="M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2"/><path d="M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3"/></svg>`;
+const BELL = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg>`;
+const THEME_ROW = (on) => `<div class="theme-row"><span class="theme-text">${on ? 'Dark mode' : 'Light mode'}</span>
+    <button type="button" class="theme-switch" role="switch" aria-checked="${on ? 'true' : 'false'}"><span class="theme-knob"></span></button></div>`;
+const USER_MENU = (hidden) => `<div class="user-menu" ${hidden ? 'hidden' : ''}>
+    <p class="user-menu-name">Daniel Tan</p><p class="user-menu-role">Driver</p>${THEME_ROW(false)}
+    <a href="#">My Profile</a><a href="#">Log out</a></div>`;
+// the role header (driver menu). open = mobile menu open, menu = profile menu open
+function roleHeader(opts) {
+  const o = opts || {};
+  return `<header class="main-header role-header">
+    <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+    <nav class="header-center${o.open ? ' is-open' : ''}">
+      <a href="#" class="nav-item active">Dashboard</a><a href="#" class="nav-item">My Rides</a>
+      <a href="#" class="nav-item">Requests</a><a href="#" class="nav-item">Challenges &amp; Badges</a>
+      <div class="mobile-only">${THEME_ROW(false)}</div>
+      <a href="#" class="nav-item mobile-only">My Profile</a><a href="#" class="nav-item mobile-only">Log out</a>
+    </nav>
+    <div class="header-right">
+      <a href="#" class="icon-btn" title="Leaderboard">${TROPHY}</a>
+      <a href="#" class="icon-btn" title="Notifications">${BELL}<span class="notif-badge">3</span></a>
+      <div class="user-menu-wrap"><button type="button" class="pfp-btn"><span class="pfp-initial">D</span></button>${USER_MENU(!o.menu)}</div>
+      <button type="button" class="menu-toggle" aria-expanded="${o.open ? 'true' : 'false'}"><span></span><span></span><span></span></button>
+    </div>
+  </header>`;
+}
+
+
+// ---------------------------------------------------------------------
+// Rows. group = section heading. name = class shown in column 1.
+// html = what goes inside the fake page.
+// options: pad:false = no 14px gap around it (full-width parts like header/footer/sections)
+//          h:number   = fixed screen height in px (for full-screen / fixed parts), the cell scrolls
+//          bg:'...'   = page background behind the component (default BODY_BG)
+//          body:'...' = extra class on <body>
+//          center:true = desktop cell starts scrolled to the middle of the 1280px screen
+//          end:true    = desktop cell starts scrolled to the right edge
+//          mid:true    = component centred on the screen (like inside its section) + center:true
+// ---------------------------------------------------------------------
+const ROWS = [
+  { group: 'Whole page' },
+  { name: '.role-page<br>.role-main<br>.role-footer', note: 'driver/dashboard.php test page (desktop: menu in the header / phone: ☰ button)', pad: false,
+    html: `${roleHeader()}
+      <main class="role-main"><h1 class="section-title">Driver Dashboard</h1><p class="section-subtitle">Header and footer test page.</p></main>
+      <footer class="role-footer"><p class="role-footer-copy">&copy; 2026 CPU - Carpooling University</p></footer>` },
+
+  { group: 'Header' },
+  { name: '.role-header', note: 'menu closed. Below 1200px the tabs hide and ☰ shows. Desktop cell starts at the middle (menu)', pad: false, center: true, html: roleHeader() },
+  { name: '.role-header .header-right', note: 'right side: icons + profile picture (desktop cell starts at the right edge)', pad: false, end: true, html: roleHeader() },
+  { name: '.role-header .header-center.is-open', note: 'mobile menu open (only shows below 1200px; desktop looks normal)', pad: false,
+    html: roleHeader({ open: true }) + '<div style="height:330px"></div>' },
+  { name: '.user-menu (open)', note: 'profile menu under the picture (desktop only; on phones it is inside ☰)', pad: false, end: true,
+    html: roleHeader({ menu: true }).replace('class="main-header role-header"', 'class="main-header role-header" style="position:relative"') + '<div style="height:260px"></div>' },
+  { name: '.role-header .nav-item', note: 'with .active (base.css has no active style yet)', bg: 'var(--header-bg)',
+    html: '<header class="role-header" style="position:static;height:auto;padding:10px;border:0;display:block"><nav class="header-center" style="position:static;display:flex;box-shadow:none;border:0;padding:0;flex-direction:row;justify-content:flex-start"><a href="#" class="nav-item active">Dashboard</a><a href="#" class="nav-item">My Rides</a></nav></header>' },
+  { name: '.role-header .mobile-only', note: 'hidden on desktop, shown inside the open mobile menu', bg: 'var(--header-bg)',
+    html: '<span style="font:12px Arial;color:var(--sub)">see ".header-center.is-open" row above</span>' },
+
+  { group: 'Icon buttons' },
+  { name: '.icon-btn', bg: 'var(--header-bg)', html: `<div class="role-header" style="display:flex;gap:12px"><a href="#" class="icon-btn">${TROPHY}</a></div>` },
+  { name: '.icon-btn:hover', bg: 'var(--header-bg)', html: `<a href="#" class="icon-btn is-hover">${TROPHY}</a>` },
+  { name: '.icon-btn:active', bg: 'var(--header-bg)', html: `<a href="#" class="icon-btn is-active">${TROPHY}</a>` },
+  { name: '.icon-btn:focus-visible', note: 'only inside .role-header', bg: 'var(--header-bg)',
+    html: `<header class="role-header" style="position:static;height:auto;padding:6px;border:0;display:flex"><a href="#" class="icon-btn is-focus">${TROPHY}</a></header>` },
+  { name: '.notif-badge', note: 'unread number on the bell', bg: 'var(--header-bg)', html: `<a href="#" class="icon-btn">${BELL}<span class="notif-badge">3</span></a>` },
+  { name: '.notif-badge (9+)', bg: 'var(--header-bg)', html: `<a href="#" class="icon-btn">${BELL}<span class="notif-badge">9+</span></a>` },
+
+  { group: 'Profile picture + menu' },
+  { name: '.pfp-btn<br>.pfp-initial', note: 'no photo yet: first letter', bg: 'var(--header-bg)',
+    html: '<button type="button" class="pfp-btn"><span class="pfp-initial">D</span></button>' },
+  { name: '.pfp-btn img', note: 'with a photo', bg: 'var(--header-bg)',
+    html: `<button type="button" class="pfp-btn"><img src="${A}passenger.png" alt=""></button>` },
+  { name: '.pfp-btn:hover', bg: 'var(--header-bg)',
+    html: '<button type="button" class="pfp-btn is-hover"><span class="pfp-initial">D</span></button>' },
+  { name: '.user-menu<br>.user-menu-name<br>.user-menu-role<br>.user-menu a', note: 'on its own', bg: 'var(--section-bg)',
+    html: `<div class="user-menu-wrap" style="width:230px;height:250px">${USER_MENU(false).replace('class="user-menu"', 'class="user-menu" style="top:0;left:0;right:auto"')}</div>` },
+  { name: '.user-menu a:hover', bg: 'var(--section-bg)',
+    html: `<div class="user-menu-wrap" style="width:230px;height:250px">${USER_MENU(false).replace('class="user-menu"', 'class="user-menu" style="top:0;left:0;right:auto"').replace('<a href="#">My Profile</a>', '<a href="#" class="is-hover">My Profile</a>')}</div>` },
+  { name: '.user-menu[hidden]', note: 'closed = hidden (empty on purpose)', bg: 'var(--section-bg)', html: USER_MENU(true) },
+
+  { group: 'Theme switch' },
+  { name: '.theme-row<br>.theme-switch<br>.theme-knob', note: 'aria-checked="false": sun', bg: 'var(--header-bg)', html: `<div style="max-width:240px">${THEME_ROW(false)}</div>` },
+  { name: '.theme-switch[aria-checked="true"]', note: 'moon (knob slides right)', bg: 'var(--header-bg)', html: `<div style="max-width:240px">${THEME_ROW(true)}</div>` },
+  { name: '.theme-switch:focus-visible', bg: 'var(--header-bg)',
+    html: `<div style="max-width:240px">${THEME_ROW(false).replace('class="theme-switch"', 'class="theme-switch is-focus"')}</div>` },
+
+  { group: 'Hamburger' },
+  { name: '.role-header .menu-toggle', note: 'only shows below 1200px (desktop cells empty)', bg: 'var(--header-bg)',
+    html: '<div class="role-header" style="display:flex"><button type="button" class="menu-toggle" aria-expanded="false"><span></span><span></span><span></span></button></div>' },
+  { name: '.menu-toggle[aria-expanded="true"]', note: 'turns into an X', bg: 'var(--header-bg)',
+    html: '<div class="role-header" style="display:flex"><button type="button" class="menu-toggle" aria-expanded="true"><span></span><span></span><span></span></button></div>' },
+
+  { group: 'Footer' },
+  { name: '.role-footer<br>.role-footer-copy', pad: false, center: true,
+    html: '<footer class="role-footer"><p class="role-footer-copy">&copy; 2026 CPU - Carpooling University</p></footer>' },
+];
+
+// ---------------------------------------------------------------------
+// builds one fake page for one cell
+// ---------------------------------------------------------------------
+function pageFor(row, theme) {
+  const links = CSS_FILES.map(f => `<link rel="stylesheet" href="${new URL(f, location.href)}">`).join('');
+  const pad = row.pad === false ? '0' : '14px';
+  const bg  = row.bg || BODY_BG;
+  const bodyClass = [BODY_CLASS, row.body || ''].join(' ').trim();
+  return `<!DOCTYPE html><html data-theme="${theme}"><head>
+    <base href="${location.href}">
+    <link rel="stylesheet" href="${FONTS}">${links}
+    <style>
+      html, body { margin: 0; }
+      body { padding: ${pad} !important; background: ${bg} !important; min-height: 0 !important; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    </style></head><body class="${bodyClass}">${row.pad === false ? row.html : `<div${row.mid ? ' style="display:flex;flex-direction:column;align-items:center;text-align:center"' : ''}>${row.html}</div>`}
+    <script>
+      // copy every :hover / :active / :focus rule into a class (.is-hover / .is-active / .is-focus)
+      // so a row can show that state without the mouse
+      function walk(parent, rules) {
+        for (let i = rules.length - 1; i >= 0; i--) {
+          const r = rules[i];
+          if (!r.selectorText && r.cssRules && r.insertRule) { walk(r, r.cssRules); continue; }
+          if (r.selectorText && /:(hover|active|focus)/.test(r.selectorText)) {
+            const sel = r.selectorText
+              .replace(/:hover/g, '.is-hover')
+              .replace(/:active/g, '.is-active')
+              .replace(/:focus-visible/g, '.is-focus')
+              .replace(/:focus(?![-\\w])/g, '.is-focus');
+            try { parent.insertRule(sel + '{' + r.style.cssText + '}', i + 1); } catch (e) {}
+          }
+        }
+      }
+      function states() {
+        for (const sh of document.styleSheets) {
+          let rules; try { rules = sh.cssRules; } catch (e) { continue; }
+          walk(sh, rules);
+        }
+        // fill in colour values for the swatches
+        const cs = getComputedStyle(document.body);
+        document.querySelectorAll('.sw-val[data-var]').forEach(el => {
+          if (el.dataset.var) el.textContent = cs.getPropertyValue(el.dataset.var).trim();
+        });
+      }
+      window.addEventListener('load', states);
+    <\/script></body></html>`;
+}
+
+function fitHeight(frame, row) {
+  if (row.h) return;
+  try {
+    const d = frame.contentDocument;
+    frame.style.height = Math.ceil(d.documentElement.scrollHeight) + 'px';
+  } catch (e) { /* opened from file:// - keep default height */ }
+}
+
+const tbody = document.getElementById('rows');
+const toc = document.getElementById('toc');
+const CELLS = [
+  { theme: 'light', kind: 'desktop' },
+  { theme: 'dark',  kind: 'desktop' },
+  { theme: 'light', kind: 'mobile' },
+  { theme: 'dark',  kind: 'mobile' },
+];
+
+let g = 0;
+ROWS.forEach(row => {
+  if (AUTO_MID && !row.group) {
+    if (row.pad === false) { if (row.center === undefined && !row.end) row.center = true; }
+    else if (row.mid === undefined) row.mid = true;
+  }
+  const tr = document.createElement('tr');
+  if (row.group) {
+    g++;
+    tr.className = 'group';
+    tr.id = 'g' + g;
+    tr.innerHTML = `<td colspan="5">${row.group}</td>`;
+    tbody.appendChild(tr);
+    toc.insertAdjacentHTML('beforeend', `<a href="#g${g}">${row.group}</a>`);
+    return;
+  }
+  const name = document.createElement('td');
+  name.className = 'name';
+  name.innerHTML = row.name + (row.note ? `<small>${row.note}</small>` : '');
+  tr.appendChild(name);
+
+  CELLS.forEach(c => {
+    const td = document.createElement('td');
+    const clip = document.createElement('div');
+    clip.className = 'clip ' + c.kind;
+    const frame = document.createElement('iframe');
+    frame.title = `${row.name} ${c.theme} ${c.kind}`;
+    frame.loading = 'lazy';
+    if (row.h) frame.style.height = row.h + 'px';
+    frame.srcdoc = pageFor(row, c.theme);
+    frame.addEventListener('load', () => {
+      fitHeight(frame, row);
+      setTimeout(() => fitHeight(frame, row), 700);
+      setTimeout(() => fitHeight(frame, row), 2000);
+    });
+    clip.appendChild(frame);
+    // centred things (pop-ups, centred sections): start the desktop window in the middle
+    if ((row.center || row.end || row.mid) && c.kind === 'desktop') {
+      frame.addEventListener('load', () => { clip.scrollLeft = row.end ? 1280 - 380 : (1280 - 380) / 2; });
+    }
+    td.appendChild(clip);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

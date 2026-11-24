@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>base.css preview</title>
+<style>
+  /* This page's own look (plain, so it doesn't compete with the components) */
+  body { margin: 0; padding: 24px; font: 14px/1.5 Arial, sans-serif; background: #f4f4f4; color: #222; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .intro { margin: 0 0 8px; color: #555; max-width: 1000px; }
+  .intro li { margin: 2px 0; }
+  .toc { margin: 0 0 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .toc a { padding: 3px 10px; border: 1px solid #bbb; border-radius: 999px; background: #fff; color: #222; text-decoration: none; font-size: 13px; }
+  .toc a:hover { background: #e8e8e8; }
+  .scroll { overflow-x: auto; background: #fff; border: 1px solid #ccc; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; text-align: left; }
+  th { background: #e8e8e8; position: sticky; top: 0; z-index: 1; }
+  td.name { width: 210px; min-width: 210px; font-family: Consolas, monospace; font-size: 13px; }
+  td.name small { display: block; margin-top: 4px; font-family: Arial, sans-serif; color: #666; }
+  tr.group td { background: #dcdcdc; font-weight: 700; font-size: 15px; scroll-margin-top: 40px; }
+  /* each output cell is a window of a fake screen: desktop = 1280px wide, mobile = 390px wide.
+     desktop cells show the left 380px; scroll sideways inside the cell to see the rest */
+  .clip { overflow: hidden; }
+  .clip.desktop { width: 380px; overflow-x: auto; }
+  .clip.mobile { width: 390px; }
+  .clip iframe { display: block; border: 0; height: 80px; background: #fff; }
+  .clip.desktop iframe { width: 1280px; }
+  .clip.mobile iframe { width: 390px; }
+</style>
+</head>
+<body>
+
+<h1>base.css preview</h1>
+<div class="intro">
+  <p style="margin:0 0 4px">Every class from <code>style/base.css</code>, shown at real size (1:1).</p>
+  <ul style="margin:0;padding-left:20px">
+    <li>Desktop cells are a 1280px-wide screen (you see the left 380px, scroll sideways inside the cell for the rest). Mobile cells are a 390px screen. So the media queries work like on a real device.</li>
+    <li>Rows named <code>:hover</code>, <code>:active</code> or <code>:focus</code> show that state frozen. Every other row still reacts when you hover it.</li>
+    <li>Animations and transitions are switched off, so each state shows its end look.</li>
+    <li>Open this page through XAMPP (<code>http://localhost/RWDD/Learn/style-preview/...</code>) so the pictures load and the cell heights fit.</li>
+  </ul>
+</div>
+<div class="toc" id="toc"></div>
+
+<div class="scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Class name</th>
+      <th>Light mode · desktop</th>
+      <th>Dark mode · desktop</th>
+      <th>Light mode · mobile</th>
+      <th>Dark mode · mobile</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// Settings for this page
+// ---------------------------------------------------------------------
+const CSS_FILES  = ["../style/base.css"];      // paths are relative to THIS html file
+const BODY_CLASS = '';   // class the real page puts on <body>
+const BODY_BG = 'var(--page-bg)';      // background the real page has
+const A = '../assets/';
+const AUTO_MID = false;        // true = every part is centred like on the real page (home)               // pictures folder
+
+const FONTS = 'https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@700&family=Patrick+Hand&family=DynaPuff:wght@400..700&display=swap';
+
+// ---------------------------------------------------------------------
+// helpers used by the rows
+// ---------------------------------------------------------------------
+// colour square + its name + the value it has in this theme
+function swatch(v) {
+  const isVar = v.startsWith('--');
+  const bg = isVar ? `var(${v})` : v;
+  return `<div style="display:flex;align-items:center;gap:10px;font:12px Consolas,monospace;color:var(--text,#222)">
+            <div style="width:48px;height:48px;flex:none;border:1px solid #888;background:${bg}"></div>
+            <span>${v}<br><b class="sw-val" data-var="${isVar ? v : ''}">${isVar ? '' : v}</b></span>
+          </div>`;
+}
+// font sample
+function fontRow(family, text) {
+  return `<div style="font-family:${family};font-size:1.6rem;color:var(--heading)">${text}</div>
+          <div style="font:12px Consolas,monospace;color:var(--sub);margin-top:4px">${family.replace(/"/g, '&quot;')}</div>`;
+}
+
+
+
+// ---------------------------------------------------------------------
+// Rows. group = section heading. name = class shown in column 1.
+// html = what goes inside the fake page.
+// options: pad:false = no 14px gap around it (full-width parts like header/footer/sections)
+//          h:number   = fixed screen height in px (for full-screen / fixed parts), the cell scrolls
+//          bg:'...'   = page background behind the component (default BODY_BG)
+//          body:'...' = extra class on <body>
+//          center:true = desktop cell starts scrolled to the middle of the 1280px screen
+//          end:true    = desktop cell starts scrolled to the right edge
+//          mid:true    = component centred on the screen (like inside its section) + center:true
+// ---------------------------------------------------------------------
+const ROWS = [
+  { group: 'Colours (CSS variables, shown as squares)' },
+  ...['--page-bg','--header-bg','--header-border','--text','--heading','--sub','--curve-text','--logo-shadow',
+      '--btn-bg','--btn-shadow','--hero-btn-bg','--hero-btn-text','--hero-btn-hover-bg','--hero-btn-hover-text',
+      '--hero-btn-hover-shadow','--section-bg','--strip-bg','--strip-line','--card-bg','--card-chip-bg',
+      '--card-accent-bg','--cord']
+    .map(v => ({ name: `var(${v})`, html: swatch(v) })),
+
+  { group: 'Fixed colours (written straight in base.css, same in both modes)' },
+  { name: '#7acb83', note: 'header h4 / .footer-brand h4 text', html: swatch('#7acb83') },
+  { name: '#4eb358', note: '.footer-column a:hover', html: swatch('#4eb358') },
+  { name: '#4eb36c', note: 'input :focus border, .contact-success-msg h4', html: swatch('#4eb36c') },
+
+  { group: 'Fonts' },
+  { name: '.font-heading', html: '<p class="font-heading" style="font-size:1.6rem;color:var(--heading)">Carpooling University</p>' },
+  { name: '.font-hand', html: '<p class="font-hand" style="font-size:1.6rem;color:var(--heading)">Carpooling University</p>' },
+  { name: 'var(--font-title)', html: fontRow('var(--font-title)', 'Carpooling University') },
+  { name: 'var(--mono)', html: fontRow('var(--mono)', 'STEP 01 / 05') },
+
+  { group: 'Buttons' },
+  { name: '.skip-btn', note: 'base.css only gives the font, shape and no border (home.css adds the colours)',
+    html: '<button class="skip-btn" type="button">Skip</button>' },
+  { name: '.nav-btn', html: '<a class="nav-btn" href="#">Join Now</a>' },
+  { name: '.nav-btn:hover', html: '<a class="nav-btn is-hover" href="#">Join Now</a>' },
+  { name: '.nav-btn:active', html: '<a class="nav-btn is-active" href="#">Join Now</a>' },
+  { name: '.hero-btn', note: '.btn-arrow is hidden until hover',
+    html: '<a class="hero-btn" href="#">Find a Ride <span class="btn-arrow">&rarr;</span></a>' },
+  { name: '.hero-btn:hover', note: 'arrow slides in',
+    html: '<a class="hero-btn is-hover" href="#">Find a Ride <span class="btn-arrow">&rarr;</span></a>' },
+  { name: '.hero-btn:active',
+    html: '<a class="hero-btn is-hover is-active" href="#">Find a Ride <span class="btn-arrow">&rarr;</span></a>' },
+  { name: '.hero-btn (button)', note: 'same class on a &lt;button&gt;',
+    html: '<button class="hero-btn" type="button">Offer a Seat <span class="btn-arrow">&rarr;</span></button>' },
+
+  { group: 'Text' },
+  { name: '.section-title', html: '<h2 class="section-title">How It Works</h2>' },
+  { name: '.section-subtitle', html: '<p class="section-subtitle">Five easy stops to your next ride.</p>' },
+  { name: '.section-title + .section-subtitle', note: 'how they sit together on the page',
+    html: '<h2 class="section-title">Why CPU?</h2><p class="section-subtitle">Everything students need for a ride, in one place.</p>' },
+
+  { group: 'Header' },
+  { name: 'header, .main-header', note: 'full header from index.html (pull cord hangs below it)', pad: false,
+    html: `<header class="main-header">
+        <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+        <nav class="header-center">
+          <a href="#" class="nav-item active">Home</a><a href="#" class="nav-item">How It Works</a><a href="#" class="nav-item">Why CPU</a>
+          <a href="#" class="nav-item">Eco Impact</a><a href="#" class="nav-item">About</a><a href="#" class="nav-item">Team</a>
+        </nav>
+        <div class="header-right"><a href="#" class="nav-btn">Join Now</a></div>
+        <button class="pull-switch" type="button"><span class="cord"></span><span class="mascot">
+          <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button>
+      </header><div style="height:110px"></div>` },
+  { name: 'header .header-center (middle)', note: 'same header, desktop cell starts at the middle (menu)', pad: false, center: true,
+    html: `<header class="main-header">
+        <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+        <nav class="header-center">
+          <a href="#" class="nav-item active">Home</a><a href="#" class="nav-item">How It Works</a><a href="#" class="nav-item">Why CPU</a>
+          <a href="#" class="nav-item">Eco Impact</a><a href="#" class="nav-item">About</a><a href="#" class="nav-item">Team</a>
+        </nav>
+        <div class="header-right"><a href="#" class="nav-btn">Join Now</a></div>
+      </header>` },
+  { name: 'header .header-right + .pull-switch', note: 'same header, desktop cell starts at the right edge (button + cord)', pad: false, end: true,
+    html: `<header class="main-header">
+        <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+        <nav class="header-center"><a href="#" class="nav-item active">Home</a><a href="#" class="nav-item">Team</a></nav>
+        <div class="header-right"><a href="#" class="nav-btn">Join Now</a></div>
+        <button class="pull-switch" type="button"><span class="cord"></span><span class="mascot">
+          <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button>
+      </header><div style="height:110px"></div>` },
+  { name: '.logo-container<br>.nav-logo<br>header h4', note: 'inside a header (header h4 needs it)', pad: false,
+    html: `<header class="main-header"><div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div></header>` },
+  { name: '.header-center .nav-item', note: 'base.css has no .active / hover style yet',
+    html: '<nav class="header-center"><a href="#" class="nav-item active">Home</a><a href="#" class="nav-item">How It Works</a><a href="#" class="nav-item">Why CPU</a></nav>' },
+  { name: '.menu-toggle', note: 'display: none in base.css (empty on purpose). role.css shows it',
+    html: '<button class="menu-toggle" type="button"><span></span><span></span><span></span></button><span style="font:12px Arial;color:var(--sub)">(hidden)</span>' },
+
+  { group: 'Light / dark pull cord' },
+  { name: '.pull-switch<br>.cord<br>.mascot', note: 'mascot-light shows in light mode, mascot-dark in dark mode (with a glow)',
+    html: `<div style="position:relative;width:140px;height:1px">
+        <button class="pull-switch" type="button"><span class="cord"></span><span class="mascot">
+        <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button></div>` },
+  { name: '.pull-switch:active', note: 'press and hold: cord stretches to 68px',
+    html: `<div style="position:relative;width:140px;height:1px">
+        <button class="pull-switch is-active" type="button"><span class="cord"></span><span class="mascot">
+        <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button></div>` },
+  { name: '.pull-switch:focus-visible', note: 'keyboard focus outline',
+    html: `<div style="position:relative;width:140px;height:1px">
+        <button class="pull-switch is-focus" type="button"><span class="cord"></span><span class="mascot">
+        <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button></div><div style="height:130px"></div>` },
+
+  { group: 'Footer' },
+  { name: '.main-footer', note: 'full footer from index.html', pad: false,
+    html: `<footer class="main-footer">
+        <div class="footer-container">
+          <div class="footer-brand">
+            <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+            <p class="footer-tagline">Carpooling University — Shared rides, greener tomorrows for APU students.</p>
+          </div>
+          <div class="footer-column">
+            <span class="footer-heading">Explore<span class="icon-wrapper explore-wrapper"><img src="${A}icon-explore.png" class="footer-icon" alt=""></span></span>
+            <a href="#">Home</a><a href="#">How It Works</a><a href="#">Why CPU</a><a href="#">Eco Impact</a><a href="#">About Us</a><a href="#">Team</a>
+          </div>
+          <div class="footer-column">
+            <span class="footer-heading">Ride<span class="icon-wrapper ride-wrapper"><img src="${A}icon-ride.png" class="footer-icon" alt=""></span></span>
+            <a href="#">Find a Ride</a><a href="#">Offer a Seat</a><a href="#">Join Now</a>
+          </div>
+          <div class="footer-column">
+            <span class="footer-heading">Help & Legal
+              <span class="icon-wrapper"><img src="${A}icon-help-dark.png" class="footer-icon icon-light-mode" alt=""><img src="${A}icon-help-light.png" class="footer-icon icon-dark-mode" alt=""></span></span>
+            <a href="#">Safety Tips</a><a href="#">Contact Us</a><a href="#">Terms of Service</a><a href="#">Privacy Policy</a>
+          </div>
+        </div>
+        <img src="${A}dog-car.png" alt="" class="footer-dog-left">
+        <img src="${A}dog-phone.png" alt="" class="footer-dog-right">
+        <div class="footer-bottom"><p>© 2026 CPU - Carpooling University</p></div>
+      </footer>` },
+  { name: '.footer-brand<br>.footer-tagline', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><div class="footer-brand">
+        <div class="logo-container"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></div>
+        <p class="footer-tagline">Carpooling University — Shared rides, greener tomorrows for APU students.</p></div></div>` },
+  { name: '.footer-column<br>.footer-heading<br>.footer-column a', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><div class="footer-column">
+        <span class="footer-heading">Ride</span><a href="#">Find a Ride</a><a href="#">Offer a Seat</a><a href="#">Join Now</a></div></div>` },
+  { name: '.footer-column a:hover', note: 'green + moves right 3px', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><div class="footer-column">
+        <a href="#" class="is-hover">Find a Ride</a></div></div>` },
+  { name: '.icon-wrapper<br>.footer-icon', note: 'default icon box 24 × 24', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><span class="footer-heading">Help & Legal
+        <span class="icon-wrapper"><img src="${A}icon-help-dark.png" class="footer-icon icon-light-mode" alt=""><img src="${A}icon-help-light.png" class="footer-icon icon-dark-mode" alt=""></span></span></div>` },
+  { name: '.explore-wrapper', note: '36 × 36', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><span class="footer-heading">Explore<span class="icon-wrapper explore-wrapper"><img src="${A}icon-explore.png" class="footer-icon" alt=""></span></span></div>` },
+  { name: '.ride-wrapper', note: '45 × 45', bg: 'var(--header-bg)',
+    html: `<div class="main-footer" style="padding:20px;border:0"><span class="footer-heading">Ride<span class="icon-wrapper ride-wrapper"><img src="${A}icon-ride.png" class="footer-icon" alt=""></span></span></div>` },
+  { name: '.icon-light-mode<br>.icon-dark-mode', note: 'light picture in light mode, dark picture in dark mode', bg: 'var(--header-bg)',
+    html: `<div style="position:relative;width:48px;height:48px">
+        <img src="${A}icon-help-dark.png" class="footer-icon icon-light-mode" alt=""><img src="${A}icon-help-light.png" class="footer-icon icon-dark-mode" alt=""></div>` },
+  { name: '.footer-dog-left<br>.footer-dog-right', note: 'absolute pictures inside .main-footer (70px wide at 768px and below)', pad: false,
+    html: `<footer class="main-footer" style="height:420px"><img src="${A}dog-car.png" alt="" class="footer-dog-left"><img src="${A}dog-phone.png" alt="" class="footer-dog-right"></footer>` },
+  { name: '.footer-bottom', center: true, bg: 'var(--header-bg)',
+    html: '<div class="main-footer" style="padding:0 20px 20px;border:0"><div class="footer-bottom" style="margin-top:0"><p>© 2026 CPU - Carpooling University</p></div></div>' },
+
+  { group: 'Contact Us pop-up' },
+  { name: '.contact-modal-overlay.active<br>.contact-modal-card', note: 'the whole pop-up, opened (fixed, covers the screen). Desktop cell starts at the middle', pad: false, h: 760, center: true,
+    html: `<div class="contact-modal-overlay active">
+        <div class="contact-modal-card">
+          <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+          <div class="modal-header-content">
+            <img src="${A}dog-phone.png" alt="Calling Dog" class="modal-dog-img">
+            <h3>Get in Touch!</h3>
+            <p>Have questions or feedback about CPU? Send us a message!</p>
+          </div>
+          <form class="contact-form" onsubmit="return false">
+            <div class="form-group"><label>Name</label><input type="text" placeholder="Your name"></div>
+            <div class="form-group"><label>Student ID / TP Number</label><input type="text" placeholder="e.g. TP012345"></div>
+            <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Type your message here..."></textarea></div>
+            <button type="submit" class="hero-btn submit-btn">Send Message <span class="btn-arrow">&rarr;</span></button>
+          </form>
+        </div>
+      </div>` },
+  { name: '.contact-modal-overlay', note: 'closed: invisible (opacity 0), so this cell is empty on purpose', h: 120, pad: false,
+    html: '<div class="contact-modal-overlay"><div class="contact-modal-card">hidden</div></div>' },
+  { name: '.contact-modal-card<br>(success)', note: 'after sending: .contact-success-msg shown, form hidden', bg: 'rgba(0,0,0,.45)',
+    html: `<div class="contact-modal-card" style="transform:none">
+        <button class="modal-close-btn" aria-label="Close modal">&times;</button>
+        <div class="contact-success-msg">
+          <img src="${A}icon-envelope.png" alt="Envelope" class="success-envelope-img">
+          <h4>Message Sent!</h4>
+          <p>Thanks for reaching out! Our team will get back to you soon.</p>
+        </div></div>` },
+  { name: '.modal-close-btn', bg: 'var(--section-bg)',
+    html: '<div style="position:relative;width:60px;height:50px"><button class="modal-close-btn">&times;</button></div>' },
+  { name: '.modal-close-btn:hover', bg: 'var(--section-bg)',
+    html: '<div style="position:relative;width:60px;height:50px"><button class="modal-close-btn is-hover">&times;</button></div>' },
+  { name: '.modal-header-content<br>.modal-dog-img', bg: 'var(--section-bg)',
+    html: `<div class="modal-header-content" style="max-width:390px"><img src="${A}dog-phone.png" alt="" class="modal-dog-img"><h3>Get in Touch!</h3>
+        <p>Have questions or feedback about CPU? Send us a message!</p></div>` },
+  { name: '.form-group label<br>.form-group input', bg: 'var(--section-bg)',
+    html: '<div class="form-group" style="max-width:360px"><label>Name</label><input type="text" placeholder="Your name"></div>' },
+  { name: '.form-group input (filled)', bg: 'var(--section-bg)',
+    html: '<div class="form-group" style="max-width:360px"><label>Name</label><input type="text" value="Daniel Tan"></div>' },
+  { name: '.form-group input:focus', note: 'green border', bg: 'var(--section-bg)',
+    html: '<div class="form-group" style="max-width:360px"><label>Name</label><input type="text" class="is-focus" value="Daniel Tan"></div>' },
+  { name: '.form-group textarea', bg: 'var(--section-bg)',
+    html: '<div class="form-group" style="max-width:360px"><label>Message</label><textarea rows="4" placeholder="Type your message here..."></textarea></div>' },
+  { name: '.contact-form', note: 'column with 14px gaps', bg: 'var(--section-bg)',
+    html: `<form class="contact-form" style="max-width:360px" onsubmit="return false">
+        <div class="form-group"><label>Name</label><input type="text" placeholder="Your name"></div>
+        <div class="form-group"><label>Student ID / TP Number</label><input type="text" placeholder="e.g. TP012345"></div></form>` },
+  { name: '.submit-btn', note: 'used with .hero-btn: full width', bg: 'var(--section-bg)',
+    html: '<div style="max-width:360px"><button type="button" class="hero-btn submit-btn">Send Message <span class="btn-arrow">&rarr;</span></button></div>' },
+  { name: '.submit-btn:hover', bg: 'var(--section-bg)',
+    html: '<div style="max-width:360px"><button type="button" class="hero-btn submit-btn is-hover">Send Message <span class="btn-arrow">&rarr;</span></button></div>' },
+  { name: '.contact-success-msg<br>.success-envelope-img', bg: 'var(--section-bg)',
+    html: `<div class="contact-success-msg" style="max-width:390px"><img src="${A}icon-envelope.png" alt="" class="success-envelope-img">
+        <h4>Message Sent!</h4><p>Thanks for reaching out! Our team will get back to you soon.</p></div>` },
+];
+
+// ---------------------------------------------------------------------
+// builds one fake page for one cell
+// ---------------------------------------------------------------------
+function pageFor(row, theme) {
+  const links = CSS_FILES.map(f => `<link rel="stylesheet" href="${new URL(f, location.href)}">`).join('');
+  const pad = row.pad === false ? '0' : '14px';
+  const bg  = row.bg || BODY_BG;
+  const bodyClass = [BODY_CLASS, row.body || ''].join(' ').trim();
+  return `<!DOCTYPE html><html data-theme="${theme}"><head>
+    <base href="${location.href}">
+    <link rel="stylesheet" href="${FONTS}">${links}
+    <style>
+      html, body { margin: 0; }
+      body { padding: ${pad} !important; background: ${bg} !important; min-height: 0 !important; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    </style></head><body class="${bodyClass}">${row.pad === false ? row.html : `<div${row.mid ? ' style="display:flex;flex-direction:column;align-items:center;text-align:center"' : ''}>${row.html}</div>`}
+    <script>
+      // copy every :hover / :active / :focus rule into a class (.is-hover / .is-active / .is-focus)
+      // so a row can show that state without the mouse
+      function walk(parent, rules) {
+        for (let i = rules.length - 1; i >= 0; i--) {
+          const r = rules[i];
+          if (!r.selectorText && r.cssRules && r.insertRule) { walk(r, r.cssRules); continue; }
+          if (r.selectorText && /:(hover|active|focus)/.test(r.selectorText)) {
+            const sel = r.selectorText
+              .replace(/:hover/g, '.is-hover')
+              .replace(/:active/g, '.is-active')
+              .replace(/:focus-visible/g, '.is-focus')
+              .replace(/:focus(?![-\\w])/g, '.is-focus');
+            try { parent.insertRule(sel + '{' + r.style.cssText + '}', i + 1); } catch (e) {}
+          }
+        }
+      }
+      function states() {
+        for (const sh of document.styleSheets) {
+          let rules; try { rules = sh.cssRules; } catch (e) { continue; }
+          walk(sh, rules);
+        }
+        // fill in colour values for the swatches
+        const cs = getComputedStyle(document.body);
+        document.querySelectorAll('.sw-val[data-var]').forEach(el => {
+          if (el.dataset.var) el.textContent = cs.getPropertyValue(el.dataset.var).trim();
+        });
+      }
+      window.addEventListener('load', states);
+    <\/script></body></html>`;
+}
+
+function fitHeight(frame, row) {
+  if (row.h) return;
+  try {
+    const d = frame.contentDocument;
+    frame.style.height = Math.ceil(d.documentElement.scrollHeight) + 'px';
+  } catch (e) { /* opened from file:// - keep default height */ }
+}
+
+const tbody = document.getElementById('rows');
+const toc = document.getElementById('toc');
+const CELLS = [
+  { theme: 'light', kind: 'desktop' },
+  { theme: 'dark',  kind: 'desktop' },
+  { theme: 'light', kind: 'mobile' },
+  { theme: 'dark',  kind: 'mobile' },
+];
+
+let g = 0;
+ROWS.forEach(row => {
+  if (AUTO_MID && !row.group) {
+    if (row.pad === false) { if (row.center === undefined && !row.end) row.center = true; }
+    else if (row.mid === undefined) row.mid = true;
+  }
+  const tr = document.createElement('tr');
+  if (row.group) {
+    g++;
+    tr.className = 'group';
+    tr.id = 'g' + g;
+    tr.innerHTML = `<td colspan="5">${row.group}</td>`;
+    tbody.appendChild(tr);
+    toc.insertAdjacentHTML('beforeend', `<a href="#g${g}">${row.group}</a>`);
+    return;
+  }
+  const name = document.createElement('td');
+  name.className = 'name';
+  name.innerHTML = row.name + (row.note ? `<small>${row.note}</small>` : '');
+  tr.appendChild(name);
+
+  CELLS.forEach(c => {
+    const td = document.createElement('td');
+    const clip = document.createElement('div');
+    clip.className = 'clip ' + c.kind;
+    const frame = document.createElement('iframe');
+    frame.title = `${row.name} ${c.theme} ${c.kind}`;
+    frame.loading = 'lazy';
+    if (row.h) frame.style.height = row.h + 'px';
+    frame.srcdoc = pageFor(row, c.theme);
+    frame.addEventListener('load', () => {
+      fitHeight(frame, row);
+      setTimeout(() => fitHeight(frame, row), 700);
+      setTimeout(() => fitHeight(frame, row), 2000);
+    });
+    clip.appendChild(frame);
+    // centred things (pop-ups, centred sections): start the desktop window in the middle
+    if ((row.center || row.end || row.mid) && c.kind === 'desktop') {
+      frame.addEventListener('load', () => { clip.scrollLeft = row.end ? 1280 - 380 : (1280 - 380) / 2; });
+    }
+    td.appendChild(clip);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

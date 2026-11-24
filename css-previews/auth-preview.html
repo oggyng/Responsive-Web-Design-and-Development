@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>auth.css preview</title>
+<style>
+  /* This page's own look (plain, so it doesn't compete with the components) */
+  body { margin: 0; padding: 24px; font: 14px/1.5 Arial, sans-serif; background: #f4f4f4; color: #222; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .intro { margin: 0 0 8px; color: #555; max-width: 1000px; }
+  .intro li { margin: 2px 0; }
+  .toc { margin: 0 0 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .toc a { padding: 3px 10px; border: 1px solid #bbb; border-radius: 999px; background: #fff; color: #222; text-decoration: none; font-size: 13px; }
+  .toc a:hover { background: #e8e8e8; }
+  .scroll { overflow-x: auto; background: #fff; border: 1px solid #ccc; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; text-align: left; }
+  th { background: #e8e8e8; position: sticky; top: 0; z-index: 1; }
+  td.name { width: 210px; min-width: 210px; font-family: Consolas, monospace; font-size: 13px; }
+  td.name small { display: block; margin-top: 4px; font-family: Arial, sans-serif; color: #666; }
+  tr.group td { background: #dcdcdc; font-weight: 700; font-size: 15px; scroll-margin-top: 40px; }
+  /* each output cell is a window of a fake screen: desktop = 1280px wide, mobile = 390px wide.
+     desktop cells show the left 380px; scroll sideways inside the cell to see the rest */
+  .clip { overflow: hidden; }
+  .clip.desktop { width: 380px; overflow-x: auto; }
+  .clip.mobile { width: 390px; }
+  .clip iframe { display: block; border: 0; height: 80px; background: #fff; }
+  .clip.desktop iframe { width: 1280px; }
+  .clip.mobile iframe { width: 390px; }
+</style>
+</head>
+<body>
+
+<h1>auth.css preview</h1>
+<div class="intro">
+  <p style="margin:0 0 4px">Every class from <code>style/base.css + style/auth.css</code>, shown at real size (1:1).</p>
+  <ul style="margin:0;padding-left:20px">
+    <li>Desktop cells are a 1280px-wide screen (you see the left 380px, scroll sideways inside the cell for the rest). Mobile cells are a 390px screen. So the media queries work like on a real device.</li>
+    <li>Rows named <code>:hover</code>, <code>:active</code> or <code>:focus</code> show that state frozen. Every other row still reacts when you hover it.</li>
+    <li>Animations and transitions are switched off, so each state shows its end look.</li>
+    <li>Open this page through XAMPP (<code>http://localhost/RWDD/Learn/style-preview/...</code>) so the pictures load and the cell heights fit.</li>
+  </ul>
+</div>
+<div class="toc" id="toc"></div>
+
+<div class="scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Class name</th>
+      <th>Light mode · desktop</th>
+      <th>Dark mode · desktop</th>
+      <th>Light mode · mobile</th>
+      <th>Dark mode · mobile</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// Settings for this page
+// ---------------------------------------------------------------------
+const CSS_FILES  = ["../style/base.css","../style/auth.css"];      // paths are relative to THIS html file
+const BODY_CLASS = 'auth-page';   // class the real page puts on <body>
+const BODY_BG = 'var(--section-bg)';      // background the real page has
+const A = '../assets/';
+const AUTO_MID = false;        // true = every part is centred like on the real page (home)               // pictures folder
+
+const FONTS = 'https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@700&family=Patrick+Hand&family=DynaPuff:wght@400..700&display=swap';
+
+// ---------------------------------------------------------------------
+// helpers used by the rows
+// ---------------------------------------------------------------------
+// colour square + its name + the value it has in this theme
+function swatch(v) {
+  const isVar = v.startsWith('--');
+  const bg = isVar ? `var(${v})` : v;
+  return `<div style="display:flex;align-items:center;gap:10px;font:12px Consolas,monospace;color:var(--text,#222)">
+            <div style="width:48px;height:48px;flex:none;border:1px solid #888;background:${bg}"></div>
+            <span>${v}<br><b class="sw-val" data-var="${isVar ? v : ''}">${isVar ? '' : v}</b></span>
+          </div>`;
+}
+// font sample
+function fontRow(family, text) {
+  return `<div style="font-family:${family};font-size:1.6rem;color:var(--heading)">${text}</div>
+          <div style="font:12px Consolas,monospace;color:var(--sub);margin-top:4px">${family.replace(/"/g, '&quot;')}</div>`;
+}
+
+// puts a component inside the sign-up card (some rules only work inside .auth-card).
+// height:auto + display:block switch off the fixed desktop card height so only the component shows
+function card(html, extra) {
+  return `<section class="auth-card" style="height:auto;display:block;padding:20px 22px;box-shadow:none;${extra || ''}">${html}</section>`;
+}
+const EYE = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="4" y1="4" x2="20" y2="20"/></svg>`;
+function pw(extraClass, value) {
+  return `<div class="form-group"><label>Password</label><div class="password-field">
+    <input type="password" value="${value || 'secret12'}"><button type="button" class="eye ${extraClass || ''}" aria-label="Show password">${EYE}</button></div></div>`;
+}
+function strength(level, word) {
+  return `<div class="strength" data-level="${level}"><span class="strength-bars"><i></i><i></i><i></i></span><span class="strength-text">${word}</span></div>`;
+}
+function roleCards(sel) {
+  const one = (role, img, on) => `<label class="role-card${on ? ' is-selected' : ''}"><input type="radio" name="role" ${on ? 'checked' : ''}>
+      <img src="${A}${img}" alt="${role}"><span class="role-type">${role}</span><span class="role-check">&#10003;</span></label>`;
+  return `<div class="role-group form-group"><div class="role-grid">${one('Passenger', 'passenger.png', sel === 'Passenger')}${one('Driver', 'driver.png', sel === 'Driver')}</div></div>`;
+}
+function upload(label, img, cls, cta) {
+  return `<div class="upload-box ${cls || ''}"><span class="label-like">${label}</span>
+    <label class="upload-drop"><img class="upload-preview" src="${A}${img}" alt=""><span class="upload-cta">${cta || 'Choose photo'}</span></label>
+    <input class="upload-input" type="file"><small class="hint">Show the whole front, plate visible</small></div>`;
+}
+const AUTH_HEADER = `<header class="main-header">
+    <a class="logo-container" href="#"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></a>
+    <div class="header-right"><a href="#" class="nav-btn">Back to home</a></div>
+    <button class="pull-switch" type="button"><span class="cord"></span><span class="mascot">
+      <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button>
+  </header>`;
+const MASCOT = (text) => `<div class="mascot-stage"><p class="mascot-bubble">${text}</p>
+    <div class="mascot-move"><div class="mascot-faces"><img class="face is-on" src="${A}feeling-normal.png" alt=""></div></div></div>`;
+
+
+// ---------------------------------------------------------------------
+// Rows. group = section heading. name = class shown in column 1.
+// html = what goes inside the fake page.
+// options: pad:false = no 14px gap around it (full-width parts like header/footer/sections)
+//          h:number   = fixed screen height in px (for full-screen / fixed parts), the cell scrolls
+//          bg:'...'   = page background behind the component (default BODY_BG)
+//          body:'...' = extra class on <body>
+//          center:true = desktop cell starts scrolled to the middle of the 1280px screen
+//          end:true    = desktop cell starts scrolled to the right edge
+//          mid:true    = component centred on the screen (like inside its section) + center:true
+// ---------------------------------------------------------------------
+const ROWS = [
+  { group: 'Colours (only the error colours are new in auth.css)' },
+  { name: 'var(--auth-err)', note: 'error text / weak password bar', html: swatch('--auth-err') },
+  { name: 'var(--auth-err-bg)', note: '.auth-error background', html: swatch('--auth-err-bg') },
+  { name: 'var(--auth-err-text)', note: '.auth-error text', html: swatch('--auth-err-text') },
+  { name: '#e07a5f', note: 'error borders (fixed, same in both modes)', html: swatch('#e07a5f') },
+  { name: '#4eb36c', note: 'select :focus border (fixed)', html: swatch('#4eb36c') },
+
+  { group: 'Whole page' },
+  { name: '.auth-page<br>.auth-main<br>.auth-wrap', note: 'sign-up page, step 1 (desktop: star left, card right / phone: stacked). Desktop cell starts at the middle', pad: false, center: true,
+    html: `${AUTH_HEADER}
+    <main class="auth-main"><div class="auth-wrap">
+      <aside class="auth-side">${MASCOT("Hi! Who's joining CPU today?")}</aside>
+      <section class="auth-card">
+        <div class="auth-progress"><span class="seg now"></span><span class="seg"></span><span class="seg"></span></div>
+        <p class="auth-step-label">Step 1 of 3</p><h1 class="auth-title">Join CPU</h1>
+        <form onsubmit="return false"><div class="auth-step"><h2 class="step-heading">Who are you?</h2>${roleCards('')}</div>
+          <div class="auth-actions"><button type="button" class="hero-btn is-primary" hidden><span class="btn-arrow">&larr;</span> <span class="btn-text">Back</span></button>
+          <button type="submit" class="hero-btn is-primary" id="nextBtn"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button></div></form>
+      </section></div>
+      <p class="auth-switch">Already have an account? <a href="#">Log in</a></p></main>
+    <footer class="auth-footer">&copy; CPU - Carpooling University</footer>` },
+  { name: '.auth-page a.logo-container<br>.auth-page .nav-btn', note: 'the auth header (logo is a link). Desktop cell starts at the right edge to show the button + cord', pad: false, end: true,
+    html: AUTH_HEADER + '<div style="height:110px"></div>' },
+  { name: '.auth-footer', pad: false, center: true, html: '<footer class="auth-footer">&copy; CPU - Carpooling University</footer>' },
+  { name: '.auth-switch<br>.auth-switch a', note: 'desktop: pushed right to sit under the card', center: true, bg: 'var(--section-bg)',
+    html: '<p class="auth-switch">Already have an account? <a href="#">Log in</a></p>' },
+  { name: '.auth-switch a:hover', center: true, bg: 'var(--section-bg)',
+    html: '<p class="auth-switch">Already have an account? <a href="#" class="is-hover">Log in</a></p>' },
+
+  { group: 'Star mascot (left side)' },
+  { name: '.auth-side<br>.mascot-stage', note: 'desktop: bubble on top / phone: star on top (column-reverse)', center: true, bg: 'var(--section-bg)',
+    html: `<aside class="auth-side">${MASCOT("Hi! Who's joining CPU today?")}</aside>` },
+  { name: '.mascot-bubble', note: 'tail points down (desktop) or up (phone)', center: true, bg: 'var(--section-bg)',
+    html: '<p class="mascot-bubble" style="margin:0 auto 12px">What\'s your student ID?</p>' },
+  { name: '.mascot-move<br>.mascot-faces .face.is-on', note: 'only the picture with .is-on shows', bg: 'var(--section-bg)',
+    html: `<div class="mascot-move"><div class="mascot-faces"><img class="face is-on" src="${A}feeling-normal.png" alt=""><img class="face" src="${A}feeling-happy.png" alt=""></div></div>` },
+  { name: '.mascot-faces .face', note: 'without .is-on: hidden (empty on purpose)', bg: 'var(--section-bg)',
+    html: `<div class="mascot-move" style="width:120px"><div class="mascot-faces"><img class="face" src="${A}feeling-happy.png" alt=""></div></div>` },
+  { name: '.mascot-move.bounce<br>.mascot-move.shake', note: 'animations (switched off here) - same look as .mascot-move', bg: 'var(--section-bg)',
+    html: `<div class="mascot-move bounce" style="width:120px"><div class="mascot-faces"><img class="face is-on" src="${A}feeling-thinking.png" alt=""></div></div>` },
+
+  { group: 'Card + top of card' },
+  { name: '.auth-card', note: 'desktop: fixed height, middle scrolls (520–780px)', bg: 'var(--section-bg)',
+    html: `<section class="auth-card" style="max-width:560px">
+        <div class="auth-progress"><span class="seg done"></span><span class="seg now"></span><span class="seg"></span></div>
+        <p class="auth-step-label">Step 2 of 3</p><h1 class="auth-title">Join CPU</h1>
+        <form onsubmit="return false"><div class="auth-step"><h2 class="step-heading">Create your account</h2>
+          <div class="form-group"><label>Student ID</label><input type="text" placeholder="TP012345"><small class="hint">TP followed by 6 numbers</small></div></div>
+          <div class="auth-actions"><button type="button" class="hero-btn is-primary"><span class="btn-arrow">&larr;</span> <span class="btn-text">Back</span></button>
+          <button type="submit" class="hero-btn is-primary" id="nextBtn"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button></div></form></section>` },
+  { name: '.auth-progress .seg', note: '.done = finished, .now = this step, plain = not yet', bg: 'var(--card-bg)',
+    html: '<div class="auth-progress" style="max-width:340px"><span class="seg done"></span><span class="seg now"></span><span class="seg"></span></div>' },
+  { name: '.auth-step-label', bg: 'var(--card-bg)', html: '<p class="auth-step-label">Step 1 of 3</p>' },
+  { name: '.auth-title', bg: 'var(--card-bg)', html: '<h1 class="auth-title">Join CPU</h1>' },
+  { name: '.step-heading', bg: 'var(--card-bg)', html: '<h2 class="step-heading">Who are you?</h2>' },
+  { name: '.auth-error', note: 'error from the server (above the form)', bg: 'var(--card-bg)',
+    html: '<p class="auth-error" style="max-width:420px">That student ID is already registered.</p>' },
+  { name: '.auth-step', note: 'one step of the form (grid, 14px gap)', bg: 'var(--card-bg)',
+    html: card(`<div class="auth-step" style="margin:0"><h2 class="step-heading">About you</h2>
+        <div class="form-group"><label>Name</label><input type="text" value="Daniel Tan"></div></div>`, 'max-width:460px') },
+
+  { group: 'Form fields' },
+  { name: '.auth-card .form-group label<br>input', bg: 'var(--card-bg)',
+    html: card('<div class="form-group"><label>Student ID</label><input type="text" placeholder="TP012345"></div>', 'max-width:420px') },
+  { name: '.label-like', note: 'a span that looks like a label (Gender, upload titles)', bg: 'var(--card-bg)',
+    html: '<span class="label-like">Gender</span>' },
+  { name: '.hint', bg: 'var(--card-bg)', html: '<small class="hint">TP followed by 6 numbers</small>' },
+  { name: '.field-error', note: 'empty = hidden', bg: 'var(--card-bg)',
+    html: '<p class="field-error">Please enter a valid student ID (TP + 6 numbers).</p>' },
+  { name: '.has-error > input', note: 'red border + message', bg: 'var(--card-bg)',
+    html: card('<div class="form-group has-error"><label>Student ID</label><input type="text" value="TP12"><p class="field-error">Please enter a valid student ID (TP + 6 numbers).</p></div>', 'max-width:420px') },
+  { name: '.auth-card select', bg: 'var(--card-bg)',
+    html: card('<div class="form-group"><label>Pickup station</label><select><option selected disabled>Choose a station</option><option>Bukit Jalil</option></select></div>', 'max-width:420px') },
+  { name: '.auth-card select:focus', bg: 'var(--card-bg)',
+    html: card('<div class="form-group"><label>Pickup station</label><select class="is-focus"><option>Bukit Jalil</option></select></div>', 'max-width:420px') },
+  { name: '.has-error > select', bg: 'var(--card-bg)',
+    html: card('<div class="form-group has-error"><label>Pickup station</label><select><option selected disabled>Choose a station</option></select><p class="field-error">Please choose a station.</p></div>', 'max-width:420px') },
+  { name: '.auth-card input[type=date]', note: 'date uses the base.css input style', bg: 'var(--card-bg)',
+    html: card('<div class="form-group"><label>Date of birth</label><input type="date" value="2005-04-12"></div>', 'max-width:420px') },
+  { name: '.auth-card #userID / #plate', note: 'typed text becomes CAPITALS', bg: 'var(--card-bg)',
+    html: card('<div class="form-group"><label>Car plate number</label><input id="plate" type="text" value="vbn 2207"></div>', 'max-width:420px') },
+  { name: '.form-row', note: '2 columns (1 column at 520px and below)', bg: 'var(--card-bg)',
+    html: card(`<div class="form-row">
+        <div class="form-group"><label>Date of birth</label><input type="date" value="2005-04-12"></div>
+        <div class="form-group"><label>Pickup station</label><select><option>Bukit Jalil</option></select></div></div>`, 'max-width:520px') },
+
+  { group: 'Password' },
+  { name: '.password-field<br>.eye', note: 'hidden password = eye with a slash', bg: 'var(--card-bg)', html: card(pw(''), 'max-width:420px') },
+  { name: '.eye.is-shown', note: 'password visible = open eye', bg: 'var(--card-bg)',
+    html: card(`<div class="form-group"><label>Password</label><div class="password-field"><input type="text" value="secret12"><button type="button" class="eye is-shown">${EYE}</button></div></div>`, 'max-width:420px') },
+  { name: '.eye:hover', bg: 'var(--card-bg)', html: card(pw('is-hover'), 'max-width:420px') },
+  { name: '.eye:focus-visible', bg: 'var(--card-bg)', html: card(pw('is-focus'), 'max-width:420px') },
+  { name: '.has-error .password-field input', bg: 'var(--card-bg)',
+    html: card(`<div class="form-group has-error"><label>Confirm password</label><div class="password-field"><input type="password" value="secret"><button type="button" class="eye">${EYE}</button></div><p class="field-error">Passwords do not match.</p></div>`, 'max-width:420px') },
+  { name: '.strength[data-level="0"]', note: 'empty password: invisible but keeps its space', bg: 'var(--card-bg)', html: strength(0, '') },
+  { name: '.strength[data-level="1"]', bg: 'var(--card-bg)', html: strength(1, 'Weak') },
+  { name: '.strength[data-level="2"]', bg: 'var(--card-bg)', html: strength(2, 'Okay') },
+  { name: '.strength[data-level="3"]', bg: 'var(--card-bg)', html: strength(3, 'Strong') },
+
+  { group: 'Gender pills' },
+  { name: '.pill-group<br>.pill', note: 'nothing chosen', bg: 'var(--card-bg)',
+    html: '<div class="pill-group" style="max-width:380px"><label class="pill"><input type="radio" name="g"><span>Male</span></label><label class="pill"><input type="radio" name="g"><span>Female</span></label></div>' },
+  { name: '.pill input:checked + span', bg: 'var(--card-bg)',
+    html: '<div class="pill-group" style="max-width:380px"><label class="pill"><input type="radio" name="g2" checked><span>Male</span></label><label class="pill"><input type="radio" name="g2"><span>Female</span></label></div>' },
+  { name: '.pill:hover', bg: 'var(--card-bg)',
+    html: '<div class="pill-group" style="max-width:380px"><label class="pill is-hover"><input type="radio" name="g3"><span>Male</span></label><label class="pill"><input type="radio" name="g3"><span>Female</span></label></div>' },
+  { name: '.pill input:focus-visible + span', bg: 'var(--card-bg)',
+    html: '<div class="pill-group" style="max-width:380px"><label class="pill"><input type="radio" name="g4" class="is-focus"><span>Male</span></label><label class="pill"><input type="radio" name="g4"><span>Female</span></label></div>' },
+
+  { group: 'Role cards (sign-up step 1)' },
+  { name: '.role-grid<br>.role-card<br>.role-type<br>.role-check', note: 'nothing chosen (tick hidden)', bg: 'var(--card-bg)',
+    html: card(roleCards(''), 'max-width:480px') },
+  { name: '.role-card.is-selected', note: 'Driver chosen: border + tick', bg: 'var(--card-bg)',
+    html: card(roleCards('Driver'), 'max-width:480px') },
+  { name: '.role-card:hover', note: 'lifts and tilts', bg: 'var(--card-bg)',
+    html: card(roleCards('').replace('class="role-card"', 'class="role-card is-hover"'), 'max-width:480px') },
+  { name: '.role-card:has(input:focus-visible)', bg: 'var(--card-bg)',
+    html: card(roleCards('').replace('<input type="radio" name="role" >', '<input type="radio" name="role" class="is-focus">'), 'max-width:480px') },
+  { name: '.role-group.has-error .role-grid', bg: 'var(--card-bg)',
+    html: card(roleCards('').replace('role-group form-group', 'role-group form-group has-error').replace('</div></div>', '</div><p class="field-error">Please choose a role.</p></div>'), 'max-width:480px') },
+
+  { group: 'Photo upload (driver step)' },
+  { name: '.upload-grid<br>.upload-box<br>.upload-drop<br>.upload-preview<br>.upload-cta', note: 'example photos with the EXAMPLE tag', bg: 'var(--card-bg)',
+    html: card(`<div class="upload-grid">${upload('Car photo (front)', 'example-car.png')}${upload('Driver licence', 'example-license.png')}</div>`, 'max-width:520px') },
+  { name: '.upload-box.has-file', note: 'a photo was chosen: no EXAMPLE tag, picture fills the box', bg: 'var(--card-bg)',
+    html: card(`<div class="upload-grid">${upload('Car photo (front)', 'example-car.png', 'has-file', 'my-car.jpg')}</div>`, 'max-width:520px') },
+  { name: '.upload-drop:hover', bg: 'var(--card-bg)',
+    html: card(`<div class="upload-grid">${upload('Car photo (front)', 'example-car.png').replace('class="upload-drop"', 'class="upload-drop is-hover"')}</div>`, 'max-width:520px') },
+  { name: '.upload-box:has(.upload-input:focus-visible)', bg: 'var(--card-bg)',
+    html: card(`<div class="upload-grid">${upload('Car photo (front)', 'example-car.png').replace('class="upload-input"', 'class="upload-input is-focus"')}</div>`, 'max-width:520px') },
+  { name: '.has-error .upload-drop', bg: 'var(--card-bg)',
+    html: card(`<div class="upload-grid">${upload('Car photo (front)', 'example-car.png', 'has-error')}</div>`, 'max-width:520px') },
+  { name: '.upload-input', note: 'the real file input is invisible (1px), the box above is the button', bg: 'var(--card-bg)',
+    html: '<input class="upload-input" type="file"><span style="font:12px Arial;color:var(--sub)">(hidden)</span>' },
+  { name: '.auth-note', bg: 'var(--card-bg)',
+    html: '<p class="auth-note" style="max-width:460px">Our admin checks your licence before you can offer rides.</p>' },
+
+  { group: 'Buttons' },
+  { name: '.auth-actions', note: 'Back left, Next right', bg: 'var(--card-bg)',
+    html: card(`<div class="auth-actions" style="margin-top:0"><button type="button" class="hero-btn is-primary"><span class="btn-arrow">&larr;</span> <span class="btn-text">Back</span></button>
+        <button type="button" class="hero-btn is-primary" id="nextBtn"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button></div>`, 'max-width:480px') },
+  { name: '.hero-btn.is-primary', bg: 'var(--card-bg)',
+    html: '<button type="button" class="hero-btn is-primary"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button>' },
+  { name: '.hero-btn.is-primary:hover', bg: 'var(--card-bg)',
+    html: '<button type="button" class="hero-btn is-primary is-hover"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button>' },
+  { name: '.hero-btn:disabled', note: 'while sending (faded)', bg: 'var(--card-bg)',
+    html: '<button type="button" class="hero-btn is-primary" disabled><span class="btn-text">Creating…</span></button>' },
+];
+
+// ---------------------------------------------------------------------
+// builds one fake page for one cell
+// ---------------------------------------------------------------------
+function pageFor(row, theme) {
+  const links = CSS_FILES.map(f => `<link rel="stylesheet" href="${new URL(f, location.href)}">`).join('');
+  const pad = row.pad === false ? '0' : '14px';
+  const bg  = row.bg || BODY_BG;
+  const bodyClass = [BODY_CLASS, row.body || ''].join(' ').trim();
+  return `<!DOCTYPE html><html data-theme="${theme}"><head>
+    <base href="${location.href}">
+    <link rel="stylesheet" href="${FONTS}">${links}
+    <style>
+      html, body { margin: 0; }
+      body { padding: ${pad} !important; background: ${bg} !important; min-height: 0 !important; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    </style></head><body class="${bodyClass}">${row.pad === false ? row.html : `<div${row.mid ? ' style="display:flex;flex-direction:column;align-items:center;text-align:center"' : ''}>${row.html}</div>`}
+    <script>
+      // copy every :hover / :active / :focus rule into a class (.is-hover / .is-active / .is-focus)
+      // so a row can show that state without the mouse
+      function walk(parent, rules) {
+        for (let i = rules.length - 1; i >= 0; i--) {
+          const r = rules[i];
+          if (!r.selectorText && r.cssRules && r.insertRule) { walk(r, r.cssRules); continue; }
+          if (r.selectorText && /:(hover|active|focus)/.test(r.selectorText)) {
+            const sel = r.selectorText
+              .replace(/:hover/g, '.is-hover')
+              .replace(/:active/g, '.is-active')
+              .replace(/:focus-visible/g, '.is-focus')
+              .replace(/:focus(?![-\\w])/g, '.is-focus');
+            try { parent.insertRule(sel + '{' + r.style.cssText + '}', i + 1); } catch (e) {}
+          }
+        }
+      }
+      function states() {
+        for (const sh of document.styleSheets) {
+          let rules; try { rules = sh.cssRules; } catch (e) { continue; }
+          walk(sh, rules);
+        }
+        // fill in colour values for the swatches
+        const cs = getComputedStyle(document.body);
+        document.querySelectorAll('.sw-val[data-var]').forEach(el => {
+          if (el.dataset.var) el.textContent = cs.getPropertyValue(el.dataset.var).trim();
+        });
+      }
+      window.addEventListener('load', states);
+    <\/script></body></html>`;
+}
+
+function fitHeight(frame, row) {
+  if (row.h) return;
+  try {
+    const d = frame.contentDocument;
+    frame.style.height = Math.ceil(d.documentElement.scrollHeight) + 'px';
+  } catch (e) { /* opened from file:// - keep default height */ }
+}
+
+const tbody = document.getElementById('rows');
+const toc = document.getElementById('toc');
+const CELLS = [
+  { theme: 'light', kind: 'desktop' },
+  { theme: 'dark',  kind: 'desktop' },
+  { theme: 'light', kind: 'mobile' },
+  { theme: 'dark',  kind: 'mobile' },
+];
+
+let g = 0;
+ROWS.forEach(row => {
+  if (AUTO_MID && !row.group) {
+    if (row.pad === false) { if (row.center === undefined && !row.end) row.center = true; }
+    else if (row.mid === undefined) row.mid = true;
+  }
+  const tr = document.createElement('tr');
+  if (row.group) {
+    g++;
+    tr.className = 'group';
+    tr.id = 'g' + g;
+    tr.innerHTML = `<td colspan="5">${row.group}</td>`;
+    tbody.appendChild(tr);
+    toc.insertAdjacentHTML('beforeend', `<a href="#g${g}">${row.group}</a>`);
+    return;
+  }
+  const name = document.createElement('td');
+  name.className = 'name';
+  name.innerHTML = row.name + (row.note ? `<small>${row.note}</small>` : '');
+  tr.appendChild(name);
+
+  CELLS.forEach(c => {
+    const td = document.createElement('td');
+    const clip = document.createElement('div');
+    clip.className = 'clip ' + c.kind;
+    const frame = document.createElement('iframe');
+    frame.title = `${row.name} ${c.theme} ${c.kind}`;
+    frame.loading = 'lazy';
+    if (row.h) frame.style.height = row.h + 'px';
+    frame.srcdoc = pageFor(row, c.theme);
+    frame.addEventListener('load', () => {
+      fitHeight(frame, row);
+      setTimeout(() => fitHeight(frame, row), 700);
+      setTimeout(() => fitHeight(frame, row), 2000);
+    });
+    clip.appendChild(frame);
+    // centred things (pop-ups, centred sections): start the desktop window in the middle
+    if ((row.center || row.end || row.mid) && c.kind === 'desktop') {
+      frame.addEventListener('load', () => { clip.scrollLeft = row.end ? 1280 - 380 : (1280 - 380) / 2; });
+    }
+    td.appendChild(clip);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>login.css preview</title>
+<style>
+  /* This page's own look (plain, so it doesn't compete with the components) */
+  body { margin: 0; padding: 24px; font: 14px/1.5 Arial, sans-serif; background: #f4f4f4; color: #222; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .intro { margin: 0 0 8px; color: #555; max-width: 1000px; }
+  .intro li { margin: 2px 0; }
+  .toc { margin: 0 0 16px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .toc a { padding: 3px 10px; border: 1px solid #bbb; border-radius: 999px; background: #fff; color: #222; text-decoration: none; font-size: 13px; }
+  .toc a:hover { background: #e8e8e8; }
+  .scroll { overflow-x: auto; background: #fff; border: 1px solid #ccc; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; text-align: left; }
+  th { background: #e8e8e8; position: sticky; top: 0; z-index: 1; }
+  td.name { width: 210px; min-width: 210px; font-family: Consolas, monospace; font-size: 13px; }
+  td.name small { display: block; margin-top: 4px; font-family: Arial, sans-serif; color: #666; }
+  tr.group td { background: #dcdcdc; font-weight: 700; font-size: 15px; scroll-margin-top: 40px; }
+  /* each output cell is a window of a fake screen: desktop = 1280px wide, mobile = 390px wide.
+     desktop cells show the left 380px; scroll sideways inside the cell to see the rest */
+  .clip { overflow: hidden; }
+  .clip.desktop { width: 380px; overflow-x: auto; }
+  .clip.mobile { width: 390px; }
+  .clip iframe { display: block; border: 0; height: 80px; background: #fff; }
+  .clip.desktop iframe { width: 1280px; }
+  .clip.mobile iframe { width: 390px; }
+</style>
+</head>
+<body>
+
+<h1>login.css preview</h1>
+<div class="intro">
+  <p style="margin:0 0 4px">Every class from <code>style/base.css + style/auth.css + style/login.css</code>, shown at real size (1:1).</p>
+  <ul style="margin:0;padding-left:20px">
+    <li>Desktop cells are a 1280px-wide screen (you see the left 380px, scroll sideways inside the cell for the rest). Mobile cells are a 390px screen. So the media queries work like on a real device.</li>
+    <li>Rows named <code>:hover</code>, <code>:active</code> or <code>:focus</code> show that state frozen. Every other row still reacts when you hover it.</li>
+    <li>Animations and transitions are switched off, so each state shows its end look.</li>
+    <li>Open this page through XAMPP (<code>http://localhost/RWDD/Learn/style-preview/...</code>) so the pictures load and the cell heights fit.</li>
+  </ul>
+</div>
+<div class="toc" id="toc"></div>
+
+<div class="scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Class name</th>
+      <th>Light mode · desktop</th>
+      <th>Dark mode · desktop</th>
+      <th>Light mode · mobile</th>
+      <th>Dark mode · mobile</th>
+    </tr>
+  </thead>
+  <tbody id="rows"></tbody>
+</table>
+</div>
+
+<script>
+// ---------------------------------------------------------------------
+// Settings for this page
+// ---------------------------------------------------------------------
+const CSS_FILES  = ["../style/base.css","../style/auth.css","../style/login.css"];      // paths are relative to THIS html file
+const BODY_CLASS = 'auth-page';   // class the real page puts on <body>
+const BODY_BG = 'var(--section-bg)';      // background the real page has
+const A = '../assets/';
+const AUTO_MID = false;        // true = every part is centred like on the real page (home)               // pictures folder
+
+const FONTS = 'https://fonts.googleapis.com/css2?family=Titan+One&family=Nunito:wght@700&family=Patrick+Hand&family=DynaPuff:wght@400..700&display=swap';
+
+// ---------------------------------------------------------------------
+// helpers used by the rows
+// ---------------------------------------------------------------------
+// colour square + its name + the value it has in this theme
+function swatch(v) {
+  const isVar = v.startsWith('--');
+  const bg = isVar ? `var(${v})` : v;
+  return `<div style="display:flex;align-items:center;gap:10px;font:12px Consolas,monospace;color:var(--text,#222)">
+            <div style="width:48px;height:48px;flex:none;border:1px solid #888;background:${bg}"></div>
+            <span>${v}<br><b class="sw-val" data-var="${isVar ? v : ''}">${isVar ? '' : v}</b></span>
+          </div>`;
+}
+// font sample
+function fontRow(family, text) {
+  return `<div style="font-family:${family};font-size:1.6rem;color:var(--heading)">${text}</div>
+          <div style="font:12px Consolas,monospace;color:var(--sub);margin-top:4px">${family.replace(/"/g, '&quot;')}</div>`;
+}
+
+const EYE = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="4" y1="4" x2="20" y2="20"/></svg>`;
+const FACES = (on, extra) => `<div class="mascot-faces ${extra || ''}">
+    ${['normal:sign-normal', 'openmouth:sign-open-mouth', 'chewing:sign-chewing', 'yummy:sign-yummy', 'wrong:sign-wrong']
+      .map(s => { const [m, f] = s.split(':'); return `<img class="face${m === on ? ' is-on' : ''}" data-mood="${m}" src="${A}${f}.png" alt="">`; }).join('')}
+  </div>`;
+const LOGIN_HEADER = `<header class="main-header">
+    <a class="logo-container" href="#"><img src="${A}logo.png" alt="CPU logo" class="nav-logo"><h4>CPU.</h4></a>
+    <div class="header-right"><a href="#" class="nav-btn">Back to home</a></div>
+    <button class="pull-switch" type="button"><span class="cord"></span><span class="mascot">
+      <img class="mascot-light" src="${A}mascot-light.png" alt=""><img class="mascot-dark" src="${A}mascot-dark.png" alt=""></span></button>
+  </header>`;
+function loginPage(step) {
+  const s1 = `<div class="auth-step"><h2 class="step-heading">Your student ID</h2>
+      <div class="form-group"><label>Student ID</label><input id="userID" type="text" placeholder="TP012345"><p class="field-error"></p></div></div>`;
+  const s2 = `<div class="auth-step"><p class="id-chip">Signing in as TP000020</p><h2 class="step-heading">Your password</h2>
+      <div class="form-group"><label>Password</label><div class="password-field"><input type="password" value="test1234"><button type="button" class="eye">${EYE}</button></div><p class="field-error"></p></div></div>`;
+  return `${LOGIN_HEADER}
+  <main class="auth-main"><div class="auth-wrap">
+    <aside class="auth-side"><div class="mascot-stage">
+      <p class="mascot-bubble">${step === 1 ? "What's your student ID?" : 'Yummy! Now your password.'}</p>
+      <div class="mascot-move">${FACES(step === 1 ? 'normal' : 'yummy')}</div></div></aside>
+    <section class="auth-card login-card">
+      <div class="auth-progress"><span class="seg ${step === 1 ? 'now' : 'done'}"></span><span class="seg ${step === 2 ? 'now' : ''}"></span></div>
+      <p class="auth-step-label">Step ${step} of 2</p><h1 class="auth-title">Welcome back</h1>
+      <form onsubmit="return false">${step === 1 ? s1 : s2}
+        <div class="auth-actions">
+          <button type="button" class="hero-btn is-primary" ${step === 1 ? 'hidden' : ''}><span class="btn-arrow">&larr;</span> <span class="btn-text">Back</span></button>
+          <button type="submit" class="hero-btn is-primary" id="nextBtn"><span class="btn-text">${step === 1 ? 'Next' : 'Log in'}</span> <span class="btn-arrow">&rarr;</span></button>
+        </div></form>
+    </section></div>
+    <p class="auth-switch">New here? <a href="#">Sign up</a></p></main>
+  <footer class="auth-footer">&copy; CPU - Carpooling University</footer>`;
+}
+
+
+// ---------------------------------------------------------------------
+// Rows. group = section heading. name = class shown in column 1.
+// html = what goes inside the fake page.
+// options: pad:false = no 14px gap around it (full-width parts like header/footer/sections)
+//          h:number   = fixed screen height in px (for full-screen / fixed parts), the cell scrolls
+//          bg:'...'   = page background behind the component (default BODY_BG)
+//          body:'...' = extra class on <body>
+//          center:true = desktop cell starts scrolled to the middle of the 1280px screen
+//          end:true    = desktop cell starts scrolled to the right edge
+//          mid:true    = component centred on the screen (like inside its section) + center:true
+// ---------------------------------------------------------------------
+const ROWS = [
+  { group: 'Whole page (login.css changes the auth.css layout)' },
+  { name: '.login-card.auth-card<br>.auth-wrap:has(.login-card)', note: 'step 1: narrower 880px layout, card 460px wide, hugs its content (min 420px tall on desktop). Desktop cell starts at the middle', pad: false, center: true,
+    html: loginPage(1) },
+  { name: '(step 2)', note: 'password step with .id-chip', pad: false, center: true, html: loginPage(2) },
+  { name: '.auth-main:has(.login-card) .auth-switch', note: '"New here? Sign up" centred under the card (desktop)', pad: false, center: true,
+    html: '<main class="auth-main" style="padding:16px"><div class="login-card" hidden></div><p class="auth-switch">New here? <a href="#">Sign up</a></p></main>' },
+
+  { group: 'Card' },
+  { name: '.login-card.auth-card', note: 'on its own', bg: 'var(--section-bg)',
+    html: `<section class="auth-card login-card" style="max-width:460px">
+      <div class="auth-progress"><span class="seg now"></span><span class="seg"></span></div>
+      <p class="auth-step-label">Step 1 of 2</p><h1 class="auth-title">Welcome back</h1>
+      <form onsubmit="return false"><div class="auth-step"><h2 class="step-heading">Your student ID</h2>
+        <div class="form-group"><label>Student ID</label><input id="userID" type="text" placeholder="TP012345"></div></div>
+        <div class="auth-actions"><button type="submit" class="hero-btn is-primary" id="nextBtn"><span class="btn-text">Next</span> <span class="btn-arrow">&rarr;</span></button></div></form></section>` },
+  { name: '.id-chip', note: '"Signing in as …" (empty = hidden)', bg: 'var(--card-bg)',
+    html: '<div style="display:grid"><p class="id-chip">Signing in as TP000020</p></div>' },
+  { name: '.is-eating', note: 'text in the box turns invisible while the star eats it', bg: 'var(--card-bg)',
+    html: '<div class="auth-card" style="height:auto;display:block;padding:16px;box-shadow:none;max-width:420px"><div class="form-group"><label>Student ID</label><input type="text" class="is-eating" value="TP000020"></div></div>' },
+  { name: '.fly-letter', note: 'one flying letter (login.js adds these to &lt;body&gt;, fixed position)', bg: 'var(--card-bg)', h: 60,
+    html: '<span class="fly-letter" style="top:30px;left:20px">T</span><span class="fly-letter" style="top:24px;left:40px">P</span><span class="fly-letter" style="top:34px;left:60px">0</span>' },
+
+  { group: 'Star while eating' },
+  { name: '.mascot-faces .face[data-mood="normal"]', note: 'sign-normal (1× size)', bg: 'var(--section-bg)',
+    html: `<div class="auth-wrap"><div class="login-card" hidden></div><div class="mascot-move" style="width:200px;margin:0">${FACES('normal')}</div></div>` },
+  { name: '[data-mood="openmouth"]', note: 'scaled by --sign-scale (1.05)', bg: 'var(--section-bg)',
+    html: `<div class="mascot-move" style="width:200px">${FACES('openmouth')}</div>` },
+  { name: '[data-mood="chewing"]', bg: 'var(--section-bg)', html: `<div class="mascot-move" style="width:200px">${FACES('chewing')}</div>` },
+  { name: '[data-mood="yummy"]', bg: 'var(--section-bg)', html: `<div class="mascot-move" style="width:200px">${FACES('yummy')}</div>` },
+  { name: '[data-mood="wrong"]', bg: 'var(--section-bg)', html: `<div class="mascot-move" style="width:200px">${FACES('wrong')}</div>` },
+  { name: '.mascot-faces.snap', note: 'pictures swap with no fade (looks the same when still)', bg: 'var(--section-bg)',
+    html: `<div class="mascot-move" style="width:200px">${FACES('chewing', 'snap')}</div>` },
+  { name: '.auth-wrap:has(.login-card) .mascot-stage / .mascot-move', note: 'desktop: bigger star (340px), pulled up 60px', bg: 'var(--section-bg)',
+    html: `<div class="auth-wrap"><aside class="auth-side"><div class="mascot-stage"><p class="mascot-bubble">What's your student ID?</p>
+      <div class="mascot-move">${FACES('normal')}</div></div></aside><section class="login-card" style="visibility:hidden"></section></div>` },
+];
+
+// ---------------------------------------------------------------------
+// builds one fake page for one cell
+// ---------------------------------------------------------------------
+function pageFor(row, theme) {
+  const links = CSS_FILES.map(f => `<link rel="stylesheet" href="${new URL(f, location.href)}">`).join('');
+  const pad = row.pad === false ? '0' : '14px';
+  const bg  = row.bg || BODY_BG;
+  const bodyClass = [BODY_CLASS, row.body || ''].join(' ').trim();
+  return `<!DOCTYPE html><html data-theme="${theme}"><head>
+    <base href="${location.href}">
+    <link rel="stylesheet" href="${FONTS}">${links}
+    <style>
+      html, body { margin: 0; }
+      body { padding: ${pad} !important; background: ${bg} !important; min-height: 0 !important; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    </style></head><body class="${bodyClass}">${row.pad === false ? row.html : `<div${row.mid ? ' style="display:flex;flex-direction:column;align-items:center;text-align:center"' : ''}>${row.html}</div>`}
+    <script>
+      // copy every :hover / :active / :focus rule into a class (.is-hover / .is-active / .is-focus)
+      // so a row can show that state without the mouse
+      function walk(parent, rules) {
+        for (let i = rules.length - 1; i >= 0; i--) {
+          const r = rules[i];
+          if (!r.selectorText && r.cssRules && r.insertRule) { walk(r, r.cssRules); continue; }
+          if (r.selectorText && /:(hover|active|focus)/.test(r.selectorText)) {
+            const sel = r.selectorText
+              .replace(/:hover/g, '.is-hover')
+              .replace(/:active/g, '.is-active')
+              .replace(/:focus-visible/g, '.is-focus')
+              .replace(/:focus(?![-\\w])/g, '.is-focus');
+            try { parent.insertRule(sel + '{' + r.style.cssText + '}', i + 1); } catch (e) {}
+          }
+        }
+      }
+      function states() {
+        for (const sh of document.styleSheets) {
+          let rules; try { rules = sh.cssRules; } catch (e) { continue; }
+          walk(sh, rules);
+        }
+        // fill in colour values for the swatches
+        const cs = getComputedStyle(document.body);
+        document.querySelectorAll('.sw-val[data-var]').forEach(el => {
+          if (el.dataset.var) el.textContent = cs.getPropertyValue(el.dataset.var).trim();
+        });
+      }
+      window.addEventListener('load', states);
+    <\/script></body></html>`;
+}
+
+function fitHeight(frame, row) {
+  if (row.h) return;
+  try {
+    const d = frame.contentDocument;
+    frame.style.height = Math.ceil(d.documentElement.scrollHeight) + 'px';
+  } catch (e) { /* opened from file:// - keep default height */ }
+}
+
+const tbody = document.getElementById('rows');
+const toc = document.getElementById('toc');
+const CELLS = [
+  { theme: 'light', kind: 'desktop' },
+  { theme: 'dark',  kind: 'desktop' },
+  { theme: 'light', kind: 'mobile' },
+  { theme: 'dark',  kind: 'mobile' },
+];
+
+let g = 0;
+ROWS.forEach(row => {
+  if (AUTO_MID && !row.group) {
+    if (row.pad === false) { if (row.center === undefined && !row.end) row.center = true; }
+    else if (row.mid === undefined) row.mid = true;
+  }
+  const tr = document.createElement('tr');
+  if (row.group) {
+    g++;
+    tr.className = 'group';
+    tr.id = 'g' + g;
+    tr.innerHTML = `<td colspan="5">${row.group}</td>`;
+    tbody.appendChild(tr);
+    toc.insertAdjacentHTML('beforeend', `<a href="#g${g}">${row.group}</a>`);
+    return;
+  }
+  const name = document.createElement('td');
+  name.className = 'name';
+  name.innerHTML = row.name + (row.note ? `<small>${row.note}</small>` : '');
+  tr.appendChild(name);
+
+  CELLS.forEach(c => {
+    const td = document.createElement('td');
+    const clip = document.createElement('div');
+    clip.className = 'clip ' + c.kind;
+    const frame = document.createElement('iframe');
+    frame.title = `${row.name} ${c.theme} ${c.kind}`;
+    frame.loading = 'lazy';
+    if (row.h) frame.style.height = row.h + 'px';
+    frame.srcdoc = pageFor(row, c.theme);
+    frame.addEventListener('load', () => {
+      fitHeight(frame, row);
+      setTimeout(() => fitHeight(frame, row), 700);
+      setTimeout(() => fitHeight(frame, row), 2000);
+    });
+    clip.appendChild(frame);
+    // centred things (pop-ups, centred sections): start the desktop window in the middle
+    if ((row.center || row.end || row.mid) && c.kind === 'desktop') {
+      frame.addEventListener('load', () => { clip.scrollLeft = row.end ? 1280 - 380 : (1280 - 380) / 2; });
+    }
+    td.appendChild(clip);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

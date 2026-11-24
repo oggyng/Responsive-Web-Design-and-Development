@@ -1,0 +1,377 @@
+/* =====================================================================
+   role.css  -  shared by every role page (passenger / driver / admin / analytic)
+   header (4 menus), icon buttons, profile menu, mobile menu, mini footer
+   needs base.css loaded first (colours, fonts, pull cord, buttons, contact pop-up)
+   ===================================================================== */
+
+/* ---------- page frame: footer always sits at the bottom ---------- */
+.role-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Patrick Hand", cursive;
+    color: var(--text);
+    background-color: var(--section-bg);
+    transition: background-color 0.4s ease;
+}
+
+/* put class="role-main" on the <main> of every role page */
+.role-main {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+/* ---------- header: logo | menu (centred) | icons ---------- */
+.role-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+}
+
+.role-header .logo-container { justify-self: start; }
+
+.role-header .header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* font, size, colour and hover come from base.css (.header-center .nav-item) - same as the landing page */
+.role-header .nav-item {
+    white-space: nowrap;
+    padding: 8px 14px;
+}
+
+.role-header .mobile-only { display: none; }
+
+.role-header .header-right {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ---------- round icon buttons (rank, notifications) ---------- */
+.icon-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--text);
+    background-color: var(--btn-bg);
+    box-shadow: 0 3px 0 var(--btn-shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.4s ease;
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 var(--btn-shadow);
+}
+
+.icon-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--btn-shadow);
+}
+
+/* unread number on the bell */
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background-color: #e8604c;
+    color: #ffffff;
+    font-family: "Nunito", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+    border: 2px solid var(--header-bg);
+}
+
+/* ---------- profile picture + its small menu ---------- */
+.user-menu-wrap { position: relative; }
+
+.pfp-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid var(--header-border);
+    background-color: var(--card-chip-bg);
+    color: var(--heading);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.4s ease, background-color 0.4s ease;
+}
+
+.pfp-btn:hover { transform: translateY(-2px); }
+
+.pfp-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* until the user has a photo: first letter of the name */
+.pfp-initial {
+    font-family: "Titan One", sans-serif;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.user-menu {
+    position: absolute;
+    top: calc(100% + 24px);
+    right: 0;
+    z-index: 20;
+    min-width: 210px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    font-family: "Patrick Hand", cursive;
+    background-color: var(--header-bg);
+    border: 2px solid var(--header-border);
+    border-radius: 16px;
+    box-shadow: 0 5px 0 var(--btn-shadow), 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.user-menu[hidden] { display: none; }
+
+.user-menu-name {
+    padding: 4px 10px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--heading);
+    overflow-wrap: anywhere;
+}
+
+.user-menu-role {
+    align-self: flex-start;
+    margin: 4px 10px 10px;
+    padding: 1px 12px;
+    border-radius: 999px;
+    background-color: var(--card-accent-bg);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.user-menu a {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.user-menu a:hover {
+    background-color: var(--card-accent-bg);
+    color: var(--heading);
+}
+
+/* Switch Theme */
+.theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 12px;
+    font-family: "Patrick Hand", cursive;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+}
+
+.theme-switch {
+    --sky: #bfe6f7; /* the track colour; the moon's "bite" uses the same colour */
+    position: relative;
+    flex-shrink: 0;
+    width: 60px;
+    height: 32px;
+    padding: 0;
+    border: 2px solid var(--header-border);
+    border-radius: 999px;
+    background-color: var(--sky);
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+}
+
+.theme-switch[aria-checked="true"] { --sky: #2a3350; }
+
+/* the ball: a sun by default */
+.theme-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: #ffc94d;
+    box-shadow: 0 0 8px rgba(255, 201, 77, 0.7);
+    transition: transform 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* a circle in the track colour that slides over the ball = a crescent moon */
+.theme-knob::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -9px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--sky);
+    transform: scale(0);
+    transition: transform 0.4s ease, background-color 0.4s ease;
+}
+
+.theme-switch[aria-checked="true"] .theme-knob {
+    transform: translateX(28px);
+    background-color: #fff3c4;
+    box-shadow: 0 0 8px rgba(255, 243, 196, 0.6);
+}
+
+.theme-switch[aria-checked="true"] .theme-knob::after { transform: scale(1); }
+
+.theme-switch:focus-visible {
+    outline: 3px solid var(--text);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-switch,
+    .theme-knob,
+    .theme-knob::after { transition: none; }
+}
+
+/* Hamburger (phone ONLY) */
+.role-header .menu-toggle {
+    width: 44px;
+    height: 44px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: 2px solid var(--header-border);
+    border-radius: 12px;
+    background-color: var(--card-chip-bg);
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--heading);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* footer */
+/* footer */
+.role-footer {
+    padding: 18px 20px;
+    text-align: center;
+    background-color: var(--header-bg);
+    border-top: 2px dashed var(--header-border);
+    color: var(--sub);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.role-footer-copy { font-size: 1rem; }
+
+/* keyboard focus */
+.role-header a:focus-visible,
+.role-header button:focus-visible,
+.role-footer a:focus-visible,
+.user-menu a:focus-visible {
+    outline: 3px solid var(--text);
+    outline-offset: 3px;
+}
+
+/* mobile: menu becomes the hamburger drop-down */
+@media (max-width: 1200px) {
+    .role-header { display: flex; justify-content: space-between; }
+
+    .role-header .menu-toggle { display: inline-flex; }
+
+    .role-header .user-menu-wrap { display: none; }   /* Profile + Log out move into the hamburger menu */
+
+    .role-header .header-center {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 9;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 14px 20px 20px;
+        background-color: var(--header-bg);
+        border-bottom: 2px dashed var(--header-border);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        display: none;
+    }
+
+    .role-header .header-center.is-open { display: flex; }
+
+    .role-header .nav-item {
+        padding: 12px 16px;
+        font-size: 1.15rem;
+    }
+
+    .role-header .mobile-only { display: block; }
+
+    /* mobile menu: the theme row lines up with the menu links */
+    .role-header .mobile-only .theme-row {
+        padding: 12px 16px;
+        font-size: 1.15rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .role-header { gap: 8px; }
+    .role-header .header-right { gap: 8px; }
+    .icon-btn, .pfp-btn, .role-header .menu-toggle { width: 40px; height: 40px; }
+    .icon-btn img { width: 22px; height: 22px; }
+
+    .role-main { padding: 28px 16px 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .role-header .nav-item,
+    .icon-btn,
+    .pfp-btn,
+    .menu-toggle span { transition: none; }
+}

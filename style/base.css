@@ -457,7 +457,7 @@ header h4 {
 }
 
 .footer-column a:hover {
-    color: #4eb36c;
+    color: #4eb358;
     transform: translateX(3px);
 }
 
@@ -599,17 +599,6 @@ header h4 {
 .submit-btn {
     width: 100%;
     margin-top: 10px;
-}
-
-.contact-success-msg {
-    text-align: center;
-    padding: 20px 0;
-}
-
-.contact-success-msg h4 {
-    font-family: var(--font-title);
-    font-size: 1.5rem;
-    color: #4eb36c;
 }
 
 .success-envelope-img {
